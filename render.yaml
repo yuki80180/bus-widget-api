@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: bus-widget-api
+    runtime: python
+    plan: free
+    region: singapore
+    buildCommand: pip install -r requirements.txt && python init_db.py
+    startCommand: gunicorn app:app
+    autoDeployTrigger: commit
+    healthCheckPath: /healthz
+    envVars:
+      - key: TZ
+        value: Asia/Tokyo
