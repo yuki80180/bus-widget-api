@@ -51,6 +51,10 @@
         .refresh-btn:active {
             background-color: #2c2c2e;
         }
+        .refresh-btn:disabled {
+            cursor: default;
+            opacity: 0.65;
+        }
         .container {
             display: flex;
             flex-direction: column;
@@ -82,14 +86,13 @@
         }
         .label {
             font-weight: bold;
-            width: 45px;
+            width: 52px;
             font-size: 13px;
             flex-shrink: 0;
         }
         .label-0 { color: var(--orange); }
         .label-1 { color: var(--blue); }
         .label-2 { color: var(--green); }
-        
         .time {
             font-weight: 700;
             font-size: 20px;
@@ -100,7 +103,6 @@
             font-size: 26px;
             width: 75px;
         }
-        
         .stop-badge {
             background-color: var(--badge-bg);
             color: var(--badge-text);
@@ -113,7 +115,6 @@
             border: 1px solid #48484a;
             flex-shrink: 0;
         }
-
         .line {
             color: var(--text-sub);
             font-size: 12px;
@@ -128,13 +129,15 @@
             font-size: 16px;
             padding: 4px 0;
         }
+        .status-msg.warning {
+            color: var(--orange);
+        }
     </style>
 </head>
 <body>
-
     <div class="header">
         <h1 id="current-clock">00:00</h1>
-        <button class="refresh-btn" onclick="updateAllLists()">更新</button>
+        <button id="refresh-button" class="refresh-btn" type="button" onclick="updateAllLists()">更新</button>
     </div>
 
     <div class="container">
@@ -155,8 +158,12 @@
     </div>
 
     <script>
-        const routes = ['to_uni', 'to_station', 'to_nakahashi'];
-        const labels = ['次発', '次々', '２先'];
+        const routes = [
+            { id: 'to_uni', badgeLabel: '着' },
+            { id: 'to_station', badgeLabel: '発' },
+            { id: 'to_nakahashi', badgeLabel: '発' }
+        ];
+        const labels = ['次発', '次々', '3本目'];
 
         const stopNameMap = {
             'A': '正門向い',
@@ -165,47 +172,90 @@
             'D': '四十万から'
         };
 
-        async function fetchRoute(dir) {
+        let isUpdating = false;
+
+        function createText(className, text) {
+            const element = document.createElement('div');
+            element.className = className;
+            element.textContent = text;
+            return element;
+        }
+
+        function renderMessage(container, message, className) {
+            container.textContent = '';
+            container.appendChild(createText(className || 'status-msg', message));
+        }
+
+        function renderBus(container, route, bus, index) {
+            const row = document.createElement('div');
+            row.className = 'bus-row' + (index === 0 ? ' primary' : '');
+
+            const stopName = stopNameMap[bus.stop] || bus.stop || '-';
+            const badgeText = route.badgeLabel + ': ' + stopName;
+
+            row.appendChild(createText('label label-' + index, labels[index] || ''));
+            row.appendChild(createText('time', bus.time || '--:--'));
+            row.appendChild(createText('stop-badge', badgeText));
+            row.appendChild(createText('line', bus.line || ''));
+            container.appendChild(row);
+        }
+
+        async function fetchRoute(route) {
+            const container = document.getElementById('list-' + route.id);
+
             try {
-                const response = await fetch(`/api/next_bus?dir=${dir}`);
+                const response = await fetch('/api/next_bus?dir=' + encodeURIComponent(route.id), {
+                    cache: 'no-store'
+                });
                 const data = await response.json();
-                const container = document.getElementById(`list-${dir}`);
-                container.innerHTML = '';
 
-                if (data.status === 'success' && data.buses.length > 0) {
-                    data.buses.forEach((bus, index) => {
-                        const row = document.createElement('div');
-                        row.className = `bus-row ${index === 0 ? 'primary' : ''}`;
-                        
-                        const stopName = stopNameMap[bus.stop] || bus.stop;
-                        const badgeText = dir === 'to_uni' ? `着: ${stopName}` : `発: ${stopName}`;
-
-                        row.innerHTML = `
-                            <div class="label label-${index}">${labels[index]}</div>
-                            <div class="time">${bus.time}</div>
-                            <div class="stop-badge">${badgeText}</div>
-                            <div class="line">${bus.line}</div>
-                        `;
-                        container.appendChild(row);
-                    });
-                } else {
-                    container.innerHTML = '<div class="status-msg">本日のバスは終了しました</div>';
+                if (!response.ok || data.status === 'error') {
+                    renderMessage(container, '時刻表を取得できません', 'status-msg warning');
+                    return;
                 }
+
+                if (data.status === 'success' && Array.isArray(data.buses) && data.buses.length > 0) {
+                    container.textContent = '';
+                    data.buses.forEach(function(bus, index) {
+                        renderBus(container, route, bus, index);
+                    });
+                    return;
+                }
+
+                if (data.status === 'end') {
+                    renderMessage(container, '本日のバスは終了しました', 'status-msg');
+                    return;
+                }
+
+                renderMessage(container, 'データ形式が変わりました', 'status-msg warning');
             } catch (error) {
-                document.getElementById(`list-${dir}`).innerHTML = '<div class="status-msg" style="color:orange;">通信エラー</div>';
+                renderMessage(container, '通信エラー', 'status-msg warning');
             }
         }
 
-        function updateAllLists() {
+        async function updateAllLists() {
+            if (isUpdating) {
+                return;
+            }
+
+            isUpdating = true;
+            const refreshButton = document.getElementById('refresh-button');
+            refreshButton.disabled = true;
+
             const now = new Date();
             const timeStr = now.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
-            document.getElementById('current-clock').innerText = timeStr;
+            document.getElementById('current-clock').textContent = timeStr;
 
-            routes.forEach(dir => fetchRoute(dir));
+            try {
+                await Promise.all(routes.map(fetchRoute));
+            } finally {
+                refreshButton.disabled = false;
+                isUpdating = false;
+            }
         }
 
         updateAllLists();
-        setInterval(updateAllLists, 10000); // 10秒ごとに自動更新
+        setInterval(updateAllLists, 10000);
     </script>
 </body>
 </html>
