@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
@@ -15,6 +16,8 @@ DEFAULT_DIFF = Path(__file__).with_name("schedule_diff.json")
 
 Bus = dict[str, str]
 Schedule = dict[str, dict[str, list[Bus]]]
+UPDATE_TARGET_ROUTES = {"to_station", "to_nakahashi"}
+INVESTIGATION_ONLY_ROUTES = {"to_uni"}
 
 
 def load_json(path: Path) -> Any:
@@ -22,35 +25,116 @@ def load_json(path: Path) -> Any:
         return json.load(file)
 
 
-def bus_key(bus: Bus) -> tuple[str, str, str]:
-    return (bus.get("time", ""), bus.get("line", ""), bus.get("stop", ""))
+def time_stop_key(bus: Bus) -> tuple[str, str]:
+    return (bus.get("time", ""), bus.get("stop", ""))
+
+
+def group_by_time_stop(items: list[Bus]) -> dict[tuple[str, str], list[Bus]]:
+    grouped: dict[tuple[str, str], list[Bus]] = defaultdict(list)
+    for item in items:
+        grouped[time_stop_key(item)].append(item)
+    return dict(grouped)
+
+
+def sorted_buses(items: list[Bus]) -> list[Bus]:
+    return sorted(items, key=lambda item: (item.get("time", ""), item.get("stop", ""), item.get("line", "")))
+
+
+def line_values(items: list[Bus]) -> list[str]:
+    return sorted(item.get("line", "") for item in items)
+
+
+def compare_target_day(old_items: list[Bus], new_items: list[Bus]) -> dict[str, Any] | None:
+    old_groups = group_by_time_stop(old_items)
+    new_groups = group_by_time_stop(new_items)
+    old_keys = set(old_groups)
+    new_keys = set(new_groups)
+
+    added_keys = sorted(new_keys - old_keys)
+    removed_keys = sorted(old_keys - new_keys)
+    common_keys = sorted(old_keys & new_keys)
+
+    line_differences = []
+    for key in common_keys:
+        old_lines = line_values(old_groups[key])
+        new_lines = line_values(new_groups[key])
+        if old_lines == new_lines:
+            continue
+        time, stop = key
+        line_differences.append(
+            {
+                "time": time,
+                "stop": stop,
+                "old_lines": old_lines,
+                "new_lines": new_lines,
+                "old": sorted_buses(old_groups[key]),
+                "new": sorted_buses(new_groups[key]),
+            }
+        )
+
+    if not added_keys and not removed_keys and not line_differences:
+        return None
+
+    return {
+        "old_count": len(old_items),
+        "new_count": len(new_items),
+        "matched_time_stop_count": len(common_keys),
+        "added": [bus for key in added_keys for bus in sorted_buses(new_groups[key])],
+        "removed": [bus for key in removed_keys for bus in sorted_buses(old_groups[key])],
+        "line_differences": line_differences,
+    }
+
+
+def summarize_investigation_day(old_items: list[Bus], new_items: list[Bus]) -> dict[str, Any]:
+    old_groups = group_by_time_stop(old_items)
+    new_groups = group_by_time_stop(new_items)
+    old_times = {item.get("time", "") for item in old_items}
+    new_times = {item.get("time", "") for item in new_items}
+
+    return {
+        "old_count": len(old_items),
+        "new_count": len(new_items),
+        "matched_time_stop_count": len(set(old_groups) & set(new_groups)),
+        "matched_time_count": len(old_times & new_times),
+        "old_only_time_count": len(old_times - new_times),
+        "new_only_time_count": len(new_times - old_times),
+        "old_stops": sorted({item.get("stop", "") for item in old_items}),
+        "new_stops": sorted({item.get("stop", "") for item in new_items}),
+        "note": "to_uni is investigation-only because the current fetch source appears to differ from the existing schedule.json source.",
+    }
 
 
 def compare(old: Schedule, new: Schedule) -> dict[str, Any]:
     route_names = sorted(set(old) | set(new))
-    result: dict[str, Any] = {"changed": False, "routes": {}}
+    result: dict[str, Any] = {
+        "changed": False,
+        "comparison_key": ["time", "stop"],
+        "update_target_routes": sorted(UPDATE_TARGET_ROUTES),
+        "investigation_only_routes": sorted(INVESTIGATION_ONLY_ROUTES),
+        "routes": {},
+        "investigation_only": {},
+    }
 
     for route in route_names:
         day_names = sorted(set(old.get(route, {})) | set(new.get(route, {})))
+
+        if route in INVESTIGATION_ONLY_ROUTES:
+            result["investigation_only"][route] = {}
+            for day in day_names:
+                old_items = old.get(route, {}).get(day, [])
+                new_items = new.get(route, {}).get(day, [])
+                result["investigation_only"][route][day] = summarize_investigation_day(old_items, new_items)
+            continue
+
         route_diff: dict[str, Any] = {}
         for day in day_names:
             old_items = old.get(route, {}).get(day, [])
             new_items = new.get(route, {}).get(day, [])
-            old_map = {bus_key(item): item for item in old_items}
-            new_map = {bus_key(item): item for item in new_items}
-
-            added_keys = sorted(set(new_map) - set(old_map))
-            removed_keys = sorted(set(old_map) - set(new_map))
-            if not added_keys and not removed_keys:
+            day_diff = compare_target_day(old_items, new_items)
+            if day_diff is None:
                 continue
-
             result["changed"] = True
-            route_diff[day] = {
-                "old_count": len(old_items),
-                "new_count": len(new_items),
-                "added": [new_map[key] for key in added_keys],
-                "removed": [old_map[key] for key in removed_keys],
-            }
+            route_diff[day] = day_diff
         if route_diff:
             result["routes"][route] = route_diff
 
@@ -59,17 +143,27 @@ def compare(old: Schedule, new: Schedule) -> dict[str, Any]:
 
 def print_summary(diff: dict[str, Any]) -> None:
     if not diff["changed"]:
-        print("No schedule differences found.")
-        return
+        print("No update-target schedule differences found.")
+    else:
+        print("Schedule differences found for update-target routes:")
+        for route, days in diff["routes"].items():
+            for day, detail in days.items():
+                print(
+                    f"- {route}/{day}: "
+                    f"{detail['old_count']} -> {detail['new_count']} "
+                    f"(+{len(detail['added'])}, -{len(detail['removed'])}, "
+                    f"line-only {len(detail['line_differences'])})"
+                )
 
-    print("Schedule differences found:")
-    for route, days in diff["routes"].items():
-        for day, detail in days.items():
-            print(
-                f"- {route}/{day}: "
-                f"{detail['old_count']} -> {detail['new_count']} "
-                f"(+{len(detail['added'])}, -{len(detail['removed'])})"
-            )
+    if diff["investigation_only"]:
+        print("Investigation-only routes:")
+        for route, days in diff["investigation_only"].items():
+            for day, detail in days.items():
+                print(
+                    f"- {route}/{day}: "
+                    f"{detail['old_count']} -> {detail['new_count']}, "
+                    f"time matches {detail['matched_time_count']}"
+                )
 
 
 def main() -> int:
