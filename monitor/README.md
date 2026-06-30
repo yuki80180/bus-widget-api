@@ -12,9 +12,20 @@ python monitor/compare_schedule.py
 ```
 
 `fetch_schedule.py` は `monitor/new_schedule.json` を保存します。
-`compare_schedule.py` は `schedule.json` と `monitor/new_schedule.json` を比較し、`monitor/schedule_diff.json` を保存します。
+`compare_schedule.py` は `schedule.json` と `monitor/new_schedule.json` を比較し、`monitor/schedule_diff.json` と `monitor/update_candidates.json` を保存します。
 
 比較は `time + stop` を主キーにします。`line` だけが違う便は追加・削除ではなく `line_differences` として別に記録します。差分がある場合は終了コード `1`、差分なしの場合は `0` で終了します。
+
+## update_candidates.json
+
+`monitor/update_candidates.json` は、DB更新候補を目視しやすくするための絞り込みファイルです。
+
+- 対象は `to_station` と `to_nakahashi` のみ
+- `added` と `removed` のみを出力
+- `line_differences` は含めない
+- `to_uni` は含めない
+
+直近の差分では、`to_station/weekday` の `07:25`、`B` 乗り場の1件だけが `added` 候補として出る想定です。
 
 ## 更新対象
 
