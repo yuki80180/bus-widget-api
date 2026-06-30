@@ -7,6 +7,7 @@ import html
 import json
 import re
 import sys
+import warnings
 from dataclasses import dataclass
 from html.parser import HTMLParser
 from pathlib import Path
@@ -121,6 +122,24 @@ def normalize_text(value: str) -> str:
     return value.strip()
 
 
+def parse_numeric_suffix(value: str) -> int | None:
+    text = normalize_text(value)
+    match = re.search(r"(\d{1,2})\s*$", text)
+    if not match:
+        return None
+    return int(match.group(1))
+
+
+def format_time(hour_text: str, minute_text: str) -> str | None:
+    hour = parse_numeric_suffix(hour_text)
+    minute = parse_numeric_suffix(minute_text)
+    if hour is None or minute is None:
+        return None
+    if not (0 <= hour <= 25 and 0 <= minute <= 59):
+        return None
+    return f"{hour:02d}:{minute:02d}"
+
+
 def discover_diaseq(client: HokutetsuClient) -> str:
     page = client.get_text("pathway.php")
     match = re.search(r'name="diaseq"\s+value="([^"]+)"\s+checked', page)
@@ -217,8 +236,17 @@ def fetch_timetable(
 
     buses = []
     for hour, check, minute in parser.rows:
-        if check in selected and minute:
-            buses.append({"time": f"{int(hour):02d}:{int(minute):02d}", "line": labels.get(check, check), "stop": pole})
+        if check not in selected or not minute:
+            continue
+        time = format_time(hour, minute)
+        if time is None:
+            warnings.warn(
+                f"Skipped invalid timetable value: pole={pole}, weekday={weekday}, "
+                f"checkdata={check}, hour={hour!r}, minute={minute!r}",
+                RuntimeWarning,
+            )
+            continue
+        buses.append({"time": time, "line": labels.get(check, check), "stop": pole})
     return sorted(buses, key=lambda item: item["time"])
 
 
