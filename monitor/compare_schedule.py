@@ -13,6 +13,7 @@ ROOT_DIR = Path(__file__).resolve().parents[1]
 DEFAULT_OLD = ROOT_DIR / "schedule.json"
 DEFAULT_NEW = Path(__file__).with_name("new_schedule.json")
 DEFAULT_DIFF = Path(__file__).with_name("schedule_diff.json")
+DEFAULT_UPDATE_CANDIDATES = Path(__file__).with_name("update_candidates.json")
 
 Bus = dict[str, str]
 Schedule = dict[str, dict[str, list[Bus]]]
@@ -50,8 +51,8 @@ def compare_target_day(old_items: list[Bus], new_items: list[Bus]) -> dict[str, 
     old_keys = set(old_groups)
     new_keys = set(new_groups)
 
-    added_keys = sorted(new_keys - old_keys)
-    removed_keys = sorted(old_keys - new_keys)
+    added_keys = sorted(set(new_groups) - set(old_groups))
+    removed_keys = sorted(set(old_groups) - set(new_groups))
     common_keys = sorted(old_keys & new_keys)
 
     line_differences = []
@@ -141,7 +142,38 @@ def compare(old: Schedule, new: Schedule) -> dict[str, Any]:
     return result
 
 
-def print_summary(diff: dict[str, Any]) -> None:
+def build_update_candidates(diff: dict[str, Any]) -> dict[str, Any]:
+    candidates: dict[str, Any] = {
+        "update_target_routes": sorted(UPDATE_TARGET_ROUTES),
+        "comparison_key": diff.get("comparison_key", ["time", "stop"]),
+        "routes": {},
+        "summary": {
+            "added_count": 0,
+            "removed_count": 0,
+        },
+    }
+
+    for route in sorted(UPDATE_TARGET_ROUTES):
+        route_diff = diff.get("routes", {}).get(route, {})
+        route_candidates: dict[str, Any] = {}
+        for day, day_diff in route_diff.items():
+            added = day_diff.get("added", [])
+            removed = day_diff.get("removed", [])
+            if not added and not removed:
+                continue
+            route_candidates[day] = {
+                "added": added,
+                "removed": removed,
+            }
+            candidates["summary"]["added_count"] += len(added)
+            candidates["summary"]["removed_count"] += len(removed)
+        if route_candidates:
+            candidates["routes"][route] = route_candidates
+
+    return candidates
+
+
+def print_summary(diff: dict[str, Any], update_candidates: dict[str, Any]) -> None:
     if not diff["changed"]:
         print("No update-target schedule differences found.")
     else:
@@ -165,22 +197,36 @@ def print_summary(diff: dict[str, Any]) -> None:
                     f"time matches {detail['matched_time_count']}"
                 )
 
+    summary = update_candidates["summary"]
+    print(
+        "Update candidates: "
+        f"+{summary['added_count']}, -{summary['removed_count']}"
+    )
+
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Compare bus schedules.")
     parser.add_argument("--old", type=Path, default=DEFAULT_OLD)
     parser.add_argument("--new", type=Path, default=DEFAULT_NEW)
     parser.add_argument("-o", "--output", type=Path, default=DEFAULT_DIFF)
+    parser.add_argument("--candidates-output", type=Path, default=DEFAULT_UPDATE_CANDIDATES)
     args = parser.parse_args()
 
     old_schedule = load_json(args.old)
     new_schedule = load_json(args.new)
     diff = compare(old_schedule, new_schedule)
+    update_candidates = build_update_candidates(diff)
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(diff, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print_summary(diff)
+    args.candidates_output.parent.mkdir(parents=True, exist_ok=True)
+    args.candidates_output.write_text(
+        json.dumps(update_candidates, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    print_summary(diff, update_candidates)
     print(f"Saved {args.output}")
+    print(f"Saved {args.candidates_output}")
     return 1 if diff["changed"] else 0
 
 
