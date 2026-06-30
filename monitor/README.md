@@ -9,10 +9,12 @@
 ```bash
 python monitor/fetch_schedule.py
 python monitor/compare_schedule.py
+python monitor/print_update_candidates.py
 ```
 
 `fetch_schedule.py` は `monitor/new_schedule.json` を保存します。
 `compare_schedule.py` は `schedule.json` と `monitor/new_schedule.json` を比較し、`monitor/schedule_diff.json` と `monitor/update_candidates.json` を保存します。
+`print_update_candidates.py` は `monitor/update_candidates.json` の `added` / `removed` だけを、手動確認しやすい形式で表示します。
 
 比較は `time + stop` を主キーにします。`line` だけが違う便は追加・削除ではなく `line_differences` として別に記録します。差分がある場合は終了コード `1`、差分なしの場合は `0` で終了します。
 
