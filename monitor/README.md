@@ -26,8 +26,9 @@ python monitor/print_update_candidates.py
 - `added` と `removed` のみを出力
 - `line_differences` は含めない
 - `to_uni` は含めない
+- `to_station` では `49` 番を含む `line` を候補から除外する
 
-直近の差分では、`to_station/weekday` の `07:25`、`B` 乗り場の1件だけが `added` 候補として出る想定です。
+直近の差分で出ていた `to_station/weekday` の `07:25`、`B` 乗り場、`(49/39) 泉野・金沢駅行` は、49番を含むため更新候補から除外します。
 
 ## 更新対象
 
