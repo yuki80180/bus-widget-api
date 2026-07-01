@@ -4,7 +4,15 @@
 
 ## 使い方
 
-リポジトリ直下で実行します。
+リポジトリ直下で実行します。取得、比較、候補表示をまとめて確認する場合は以下を使います。
+
+```bash
+python monitor/run_check.py
+```
+
+`run_check.py` は `fetch_schedule.py`、`compare_schedule.py`、`print_update_candidates.py` を順番に実行します。`monitor/update_candidates.json` の `added_count` と `removed_count` がどちらも `0` の場合は、最後に `更新候補なし` と表示します。
+
+個別に実行する場合は以下の順番で実行します。
 
 ```bash
 python monitor/fetch_schedule.py
