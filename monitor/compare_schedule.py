@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from collections import defaultdict
 from pathlib import Path
@@ -19,6 +20,7 @@ Bus = dict[str, str]
 Schedule = dict[str, dict[str, list[Bus]]]
 UPDATE_TARGET_ROUTES = {"to_station", "to_nakahashi"}
 INVESTIGATION_ONLY_ROUTES = {"to_uni"}
+EXCLUDED_LINE_NUMBERS_BY_ROUTE = {"to_station": {"49"}}
 
 
 def load_json(path: Path) -> Any:
@@ -45,7 +47,26 @@ def line_values(items: list[Bus]) -> list[str]:
     return sorted(item.get("line", "") for item in items)
 
 
-def compare_target_day(old_items: list[Bus], new_items: list[Bus]) -> dict[str, Any] | None:
+def line_has_number(line: str, number: str) -> bool:
+    return re.search(rf"(?<!\d){re.escape(number)}(?!\d)", line) is not None
+
+
+def is_excluded_bus(route: str, bus: Bus) -> bool:
+    excluded_numbers = EXCLUDED_LINE_NUMBERS_BY_ROUTE.get(route, set())
+    line = bus.get("line", "")
+    return any(line_has_number(line, number) for number in excluded_numbers)
+
+
+def has_excluded_line(route: str, lines: list[str]) -> bool:
+    excluded_numbers = EXCLUDED_LINE_NUMBERS_BY_ROUTE.get(route, set())
+    return any(line_has_number(line, number) for line in lines for number in excluded_numbers)
+
+
+def filter_excluded_buses(route: str, items: list[Bus]) -> list[Bus]:
+    return [item for item in items if not is_excluded_bus(route, item)]
+
+
+def compare_target_day(route: str, old_items: list[Bus], new_items: list[Bus]) -> dict[str, Any] | None:
     old_groups = group_by_time_stop(old_items)
     new_groups = group_by_time_stop(new_items)
     old_keys = set(old_groups)
@@ -59,7 +80,7 @@ def compare_target_day(old_items: list[Bus], new_items: list[Bus]) -> dict[str, 
     for key in common_keys:
         old_lines = line_values(old_groups[key])
         new_lines = line_values(new_groups[key])
-        if old_lines == new_lines:
+        if old_lines == new_lines or has_excluded_line(route, old_lines + new_lines):
             continue
         time, stop = key
         line_differences.append(
@@ -73,15 +94,24 @@ def compare_target_day(old_items: list[Bus], new_items: list[Bus]) -> dict[str, 
             }
         )
 
-    if not added_keys and not removed_keys and not line_differences:
+    added = filter_excluded_buses(
+        route,
+        [bus for key in added_keys for bus in sorted_buses(new_groups[key])],
+    )
+    removed = filter_excluded_buses(
+        route,
+        [bus for key in removed_keys for bus in sorted_buses(old_groups[key])],
+    )
+
+    if not added and not removed and not line_differences:
         return None
 
     return {
         "old_count": len(old_items),
         "new_count": len(new_items),
         "matched_time_stop_count": len(common_keys),
-        "added": [bus for key in added_keys for bus in sorted_buses(new_groups[key])],
-        "removed": [bus for key in removed_keys for bus in sorted_buses(old_groups[key])],
+        "added": added,
+        "removed": removed,
         "line_differences": line_differences,
     }
 
@@ -112,6 +142,9 @@ def compare(old: Schedule, new: Schedule) -> dict[str, Any]:
         "comparison_key": ["time", "stop"],
         "update_target_routes": sorted(UPDATE_TARGET_ROUTES),
         "investigation_only_routes": sorted(INVESTIGATION_ONLY_ROUTES),
+        "excluded_line_numbers_by_route": {
+            route: sorted(numbers) for route, numbers in EXCLUDED_LINE_NUMBERS_BY_ROUTE.items()
+        },
         "routes": {},
         "investigation_only": {},
     }
@@ -131,7 +164,7 @@ def compare(old: Schedule, new: Schedule) -> dict[str, Any]:
         for day in day_names:
             old_items = old.get(route, {}).get(day, [])
             new_items = new.get(route, {}).get(day, [])
-            day_diff = compare_target_day(old_items, new_items)
+            day_diff = compare_target_day(route, old_items, new_items)
             if day_diff is None:
                 continue
             result["changed"] = True
@@ -146,6 +179,9 @@ def build_update_candidates(diff: dict[str, Any]) -> dict[str, Any]:
     candidates: dict[str, Any] = {
         "update_target_routes": sorted(UPDATE_TARGET_ROUTES),
         "comparison_key": diff.get("comparison_key", ["time", "stop"]),
+        "excluded_line_numbers_by_route": {
+            route: sorted(numbers) for route, numbers in EXCLUDED_LINE_NUMBERS_BY_ROUTE.items()
+        },
         "routes": {},
         "summary": {
             "added_count": 0,
@@ -157,8 +193,8 @@ def build_update_candidates(diff: dict[str, Any]) -> dict[str, Any]:
         route_diff = diff.get("routes", {}).get(route, {})
         route_candidates: dict[str, Any] = {}
         for day, day_diff in route_diff.items():
-            added = day_diff.get("added", [])
-            removed = day_diff.get("removed", [])
+            added = filter_excluded_buses(route, day_diff.get("added", []))
+            removed = filter_excluded_buses(route, day_diff.get("removed", []))
             if not added and not removed:
                 continue
             route_candidates[day] = {
