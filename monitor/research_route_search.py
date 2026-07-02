@@ -37,6 +37,7 @@ class SearchCase:
 class RouteSearchFormState:
     fields: list[tuple[str, str]]
     next_page: str | None
+    previous_page: str | None
 
 
 SEARCH_CASES: tuple[SearchCase, ...] = (
@@ -51,6 +52,7 @@ class RouteSearchFormParser(HTMLParser):
         super().__init__()
         self.fields: list[tuple[str, str]] = []
         self.next_page: str | None = None
+        self.previous_page: str | None = None
         self.found_form = False
         self.in_form = False
         self.form_depth = 0
@@ -80,7 +82,7 @@ class RouteSearchFormParser(HTMLParser):
         elif tag == "option":
             self._handle_option(attr_map)
         elif tag == "a":
-            self._capture_next_page(attr_map)
+            self._capture_page_links(attr_map)
 
     def handle_endtag(self, tag: str) -> None:
         tag = tag.lower()
@@ -139,14 +141,19 @@ class RouteSearchFormParser(HTMLParser):
         self.current_select_selected_value = None
         self.current_select_first_value = None
 
-    def _capture_next_page(self, attr_map: dict[str, str]) -> None:
-        if self.next_page is not None or attr_map.get("id") not in {"next", "next2"}:
-            return
-
+    def _capture_page_links(self, attr_map: dict[str, str]) -> None:
+        link_id = attr_map.get("id")
         href = attr_map.get("href", "")
         normalized_href = href[2:] if href.startswith("./") else href
-        if normalized_href == ROUTE_SEARCH_PATH and attr_map.get("value"):
-            self.next_page = html.unescape(attr_map["value"])
+        page_value = attr_map.get("value")
+
+        if normalized_href != ROUTE_SEARCH_PATH or not page_value:
+            return
+
+        if self.next_page is None and link_id in {"next", "next2"}:
+            self.next_page = html.unescape(page_value)
+        elif self.previous_page is None and link_id in {"back", "back2"}:
+            self.previous_page = html.unescape(page_value)
 
 
 class RouteSearchClient:
@@ -233,14 +240,24 @@ def parse_route_search_form(page: str) -> RouteSearchFormState:
     if not parser.found_form:
         raise RuntimeError("Could not find form1 in route search response")
 
-    return RouteSearchFormState(fields=parser.fields, next_page=parser.next_page)
+    return RouteSearchFormState(
+        fields=parser.fields,
+        next_page=parser.next_page,
+        previous_page=parser.previous_page,
+    )
+
+
+def build_page_form_data(
+    form_data: list[tuple[str, str]], *, arrow: str, page: str
+) -> list[tuple[str, str]]:
+    page_data = [(name, value) for name, value in form_data if name not in {"arrow", "page"}]
+    page_data.append(("arrow", arrow))
+    page_data.append(("page", page))
+    return page_data
 
 
 def build_next_page_form_data(form_data: list[tuple[str, str]], *, page: str) -> list[tuple[str, str]]:
-    next_page_data = [(name, value) for name, value in form_data if name not in {"arrow", "page"}]
-    next_page_data.append(("arrow", "next"))
-    next_page_data.append(("page", page))
-    return next_page_data
+    return build_page_form_data(form_data, arrow="next", page=page)
 
 
 def run(debug_dir: Path, *, hour: str, minute: str) -> None:
@@ -306,7 +323,21 @@ def run(debug_dir: Path, *, hour: str, minute: str) -> None:
         )
         route_response = client.post_text(ROUTE_SEARCH_PATH, form_data)
         save_text(route_response_file, route_response)
-        save_text(page_01_response_file, route_response)
+
+        first_page_response = route_response
+        try:
+            form_state = parse_route_search_form(first_page_response)
+            if form_state.previous_page:
+                previous_page_data = build_page_form_data(
+                    form_state.fields,
+                    arrow="back",
+                    page=form_state.previous_page,
+                )
+                first_page_response = client.post_text(ROUTE_SEARCH_PATH, previous_page_data)
+        except Exception as exc:
+            print(f"[{index}] WARNING: first page rewind failed: {exc}", file=sys.stderr)
+
+        save_text(page_01_response_file, first_page_response)
 
         max_pages = 20
 
@@ -319,7 +350,9 @@ def run(debug_dir: Path, *, hour: str, minute: str) -> None:
                 int(result_range["total"]),
             )
 
-        first_result_range = find_result_range(route_response)
+        first_result_range = find_result_range(first_page_response)
+        if first_result_range:
+            print(f"[{index}] page_01 result_range={first_result_range['text']}")
         pages: list[dict[str, object]] = [
             {
                 "page_index": 1,
@@ -341,7 +374,7 @@ def run(debug_dir: Path, *, hour: str, minute: str) -> None:
             "first_result_range": first_result_range,
         }
 
-        current_response = route_response
+        current_response = first_page_response
         previous_result_range = first_result_range
         pagination_stop_reason = "max_pages_reached"
 
@@ -376,6 +409,8 @@ def run(debug_dir: Path, *, hour: str, minute: str) -> None:
                     save_text(next_page_response_file, page_response)
 
                 result_range = find_result_range(page_response)
+                if result_range:
+                    print(f"[{index}] page_{page_index:02d} result_range={result_range['text']}")
                 previous_key = result_range_key(previous_result_range)
                 current_key = result_range_key(result_range)
                 duplicate = current_key is not None and current_key in seen_result_ranges
