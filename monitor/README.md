@@ -26,6 +26,37 @@ python monitor/print_update_candidates.py
 
 比較は `time + stop` を主キーにします。`line` だけが違う便は追加・削除ではなく `line_differences` として別に記録します。差分がある場合は終了コード `1`、差分なしの場合は `0` で終了します。
 
+## 発着指定検索の調査
+
+発着指定検索フォームを使った取得方法は調査中です。既存の `fetch_schedule.py` とは別に、調査用スクリプトでHTMLとPOST内容を保存します。
+
+```bash
+python monitor/research_route_search.py
+```
+
+このスクリプトは `monitor/debug/` を作成し、以下を保存します。
+
+- `01_pathway.html`: 発着指定検索フォームのHTML
+- `*_stop_resolver_request.json`: `phpscript/hpjpp0500.php` に送信した停留所確認用POSTデータ
+- `*_stop_resolver_response.txt`: 停留所確認レスポンス
+- `*_route_search_request.json`: `pathway_timetable.php` に送信した発着検索POSTデータ
+- `*_route_search_response.html`: 発着検索結果HTML
+- `00_route_search_summary.json`: URL、POSTパラメータ、保存ファイルの一覧
+
+調査対象は平日・出発条件で、以下の3例です。
+
+- 金沢駅 → 金沢工業大学
+- 金沢工業大学 → 金沢駅
+- 金沢工業大学 → 中橋
+
+デフォルトの検索時刻は `07:00` です。必要に応じて `--hour` と `--minute` を指定できます。
+
+```bash
+python monitor/research_route_search.py --hour 08 --minute 30
+```
+
+この調査スクリプトは自動更新には使いません。`schedule.json` や `bus.db` は変更しません。
+
 ## update_candidates.json
 
 `monitor/update_candidates.json` は、DB更新候補を目視しやすくするための絞り込みファイルです。
