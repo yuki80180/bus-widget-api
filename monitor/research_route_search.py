@@ -275,6 +275,7 @@ def run(debug_dir: Path, *, hour: str, minute: str) -> None:
         route_response_file = debug_dir / f"{prefix}_route_search_response.html"
         next_page_request_file = debug_dir / f"{prefix}_route_search_next_page_request.json"
         next_page_response_file = debug_dir / f"{prefix}_route_search_next_page_response.html"
+        page_01_response_file = debug_dir / f"{prefix}_route_search_page_01_response.html"
 
         print(
             f"[{index}] POST {STOP_RESOLVE_PATH} "
@@ -305,70 +306,132 @@ def run(debug_dir: Path, *, hour: str, minute: str) -> None:
         )
         route_response = client.post_text(ROUTE_SEARCH_PATH, form_data)
         save_text(route_response_file, route_response)
+        save_text(page_01_response_file, route_response)
+
+        max_pages = 20
+
+        def result_range_key(result_range: dict[str, int | str] | None) -> tuple[int, int, int] | None:
+            if result_range is None:
+                return None
+            return (
+                int(result_range["start"]),
+                int(result_range["end"]),
+                int(result_range["total"]),
+            )
 
         first_result_range = find_result_range(route_response)
+        pages: list[dict[str, object]] = [
+            {
+                "page_index": 1,
+                "request_page_value": None,
+                "result_range": first_result_range,
+                "response_file": str(page_01_response_file),
+                "request_file": str(route_request_file),
+                "advanced": True,
+            }
+        ]
+
+        seen_result_ranges: set[tuple[int, int, int]] = set()
+        first_key = result_range_key(first_result_range)
+        if first_key is not None:
+            seen_result_ranges.add(first_key)
+
         next_page_summary: dict[str, object] = {
             "found": False,
             "first_result_range": first_result_range,
         }
 
-        try:
-            form_state = parse_route_search_form(route_response)
-            next_page = form_state.next_page
+        current_response = route_response
+        previous_result_range = first_result_range
+        pagination_stop_reason = "max_pages_reached"
 
-            if next_page:
+        for page_index in range(2, max_pages + 1):
+            try:
+                form_state = parse_route_search_form(current_response)
+                next_page = form_state.next_page
+
+                if not next_page:
+                    pagination_stop_reason = "next_page_not_found"
+                    print(f"[{index}] Next page link not found; stopped")
+                    break
+
+                page_request_file = debug_dir / f"{prefix}_route_search_page_{page_index:02d}_request.json"
+                page_response_file = debug_dir / f"{prefix}_route_search_page_{page_index:02d}_response.html"
+
                 next_page_data = build_next_page_form_data(form_state.fields, page=next_page)
-                next_page_files: dict[str, str] = {
-                    "route_search_next_page_request": str(next_page_request_file),
+                request_payload = {
+                    "url": BASE_URL + "/" + ROUTE_SEARCH_PATH,
+                    "method": "POST",
+                    "data_format": "ordered name/value pairs; duplicate names are preserved",
+                    "data": normalize_form_data_for_json(next_page_data),
                 }
 
-                print(
-                    f"[{index}] POST {ROUTE_SEARCH_PATH} "
-                    f"departure={case.departure} arrival={case.arrival} "
-                    f"weekday={case.weekday} arrow=next page={next_page}"
-                )
-                save_json(
-                    next_page_request_file,
-                    {
-                        "url": BASE_URL + "/" + ROUTE_SEARCH_PATH,
-                        "method": "POST",
-                        "data_format": "ordered name/value pairs; duplicate names are preserved",
-                        "data": normalize_form_data_for_json(next_page_data),
-                    },
-                )
+                save_json(page_request_file, request_payload)
+                if page_index == 2:
+                    save_json(next_page_request_file, request_payload)
 
-                next_page_response = client.post_text(ROUTE_SEARCH_PATH, next_page_data)
-                save_text(next_page_response_file, next_page_response)
-                next_page_files["route_search_next_page_response"] = str(next_page_response_file)
+                page_response = client.post_text(ROUTE_SEARCH_PATH, next_page_data)
+                save_text(page_response_file, page_response)
+                if page_index == 2:
+                    save_text(next_page_response_file, page_response)
 
-                next_result_range = find_result_range(next_page_response)
-                advanced = (
-                    first_result_range is not None
-                    and next_result_range is not None
-                    and first_result_range != next_result_range
-                )
+                result_range = find_result_range(page_response)
+                previous_key = result_range_key(previous_result_range)
+                current_key = result_range_key(result_range)
+                duplicate = current_key is not None and current_key in seen_result_ranges
+                advanced = current_key is not None and current_key != previous_key and not duplicate
 
-                next_page_summary = {
-                    "found": True,
-                    "page": next_page,
-                    "restored_form_field_count": len(form_state.fields),
-                    "request_data": normalize_form_data_for_json(next_page_data),
-                    "first_result_range": first_result_range,
-                    "next_result_range": next_result_range,
+                page_record: dict[str, object] = {
+                    "page_index": page_index,
+                    "request_page_value": next_page,
+                    "result_range": result_range,
+                    "response_file": str(page_response_file),
+                    "request_file": str(page_request_file),
                     "advanced": advanced,
-                    "files": next_page_files,
                 }
+
+                if current_key is None:
+                    pagination_stop_reason = "result_range_not_found"
+                    page_record["warning"] = "Could not find result range in response."
+                elif duplicate:
+                    pagination_stop_reason = "duplicate_result_range"
+                    page_record["warning"] = "Result range was already seen."
+                elif current_key == previous_key:
+                    pagination_stop_reason = "result_range_not_advanced"
+                    page_record["warning"] = "Result range did not advance from previous page."
+
+                pages.append(page_record)
+
+                if page_index == 2:
+                    next_page_summary = {
+                        "found": True,
+                        "page": next_page,
+                        "restored_form_field_count": len(form_state.fields),
+                        "request_data": normalize_form_data_for_json(next_page_data),
+                        "first_result_range": first_result_range,
+                        "next_result_range": result_range,
+                        "advanced": advanced,
+                        "files": {
+                            "route_search_next_page_request": str(next_page_request_file),
+                            "route_search_next_page_response": str(next_page_response_file),
+                        },
+                    }
 
                 if not advanced:
-                    next_page_summary["warning"] = (
-                        "Next page response did not advance from the first result range."
-                    )
-            else:
-                print(f"[{index}] Next page link not found; skipped")
+                    print(f"[{index}] Pagination stopped: {pagination_stop_reason}")
+                    break
 
-        except Exception as exc:
-            next_page_summary["error"] = str(exc)
-            print(f"[{index}] WARNING: next page fetch failed: {exc}", file=sys.stderr)
+                seen_result_ranges.add(current_key)
+                current_response = page_response
+                previous_result_range = result_range
+
+            except Exception as exc:
+                pagination_stop_reason = "page_fetch_failed"
+                next_page_summary["error"] = str(exc)
+                print(f"[{index}] WARNING: page fetch failed: {exc}", file=sys.stderr)
+                break
+
+        next_page_summary["stop_reason"] = pagination_stop_reason
 
         summary["cases"].append(
             {
@@ -385,8 +448,11 @@ def run(debug_dir: Path, *, hour: str, minute: str) -> None:
                     "stop_resolver_response": str(resolve_response_file),
                     "route_search_request": str(route_request_file),
                     "route_search_response": str(route_response_file),
+                    "route_search_page_01_response": str(page_01_response_file),
                 },
                 "next_page": next_page_summary,
+                "pages": pages,
+                "pagination_stop_reason": pagination_stop_reason,
             }
         )
 
