@@ -98,3 +98,7 @@ python monitor/research_route_search.py --hour 08 --minute 30
 ## 変更範囲
 
 この監視機能は `monitor/` 配下だけで完結します。既存の `app.py`、`bus.db`、`Scriptable_Scripts/` は変更しません。DB更新や `schedule.json` の上書きは、この段階では行いません。
+- `*_route_search_next_page_request.json`: 最初の発着検索結果HTMLから復元したフォームデータに `arrow=next` と `page` を追加した次の件ページ用POSTデータ
+- `*_route_search_next_page_response.html`: 次の件ページの発着検索結果HTML
+
+「次の件」ページの調査取得では、最初の検索結果HTML内の `form name="form1"` から input/select の値を復元し、`id="next"` または `id="next2"` の `value` を `page` として `pathway_timetable.php` にPOSTする。これにより、例として `uni_to_nakahashi_weekday` では `2～6／24件` から `7～11／24件` に進むことを確認した。
