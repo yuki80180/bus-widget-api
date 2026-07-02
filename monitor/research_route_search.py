@@ -12,6 +12,7 @@ import json
 import re
 import sys
 from dataclasses import dataclass
+from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urlencode
 from urllib.request import Request, build_opener
@@ -32,11 +33,120 @@ class SearchCase:
     pathway: str = "0"
 
 
+@dataclass(frozen=True)
+class RouteSearchFormState:
+    fields: list[tuple[str, str]]
+    next_page: str | None
+
+
 SEARCH_CASES: tuple[SearchCase, ...] = (
     SearchCase("kanazawa_station_to_uni_weekday", "金沢駅", "金沢工業大学"),
     SearchCase("uni_to_kanazawa_station_weekday", "金沢工業大学", "金沢駅"),
     SearchCase("uni_to_nakahashi_weekday", "金沢工業大学", "中橋"),
 )
+
+
+class RouteSearchFormParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self.fields: list[tuple[str, str]] = []
+        self.next_page: str | None = None
+        self.found_form = False
+        self.in_form = False
+        self.form_depth = 0
+        self.current_select_name: str | None = None
+        self.current_select_selected_value: str | None = None
+        self.current_select_first_value: str | None = None
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        tag = tag.lower()
+        attr_map = {name.lower(): value or "" for name, value in attrs}
+
+        if tag == "form" and attr_map.get("name") == "form1":
+            self.found_form = True
+            self.in_form = True
+            self.form_depth = 1
+            return
+
+        if not self.in_form:
+            return
+
+        if tag == "form":
+            self.form_depth += 1
+        elif tag == "input":
+            self._add_input(attr_map)
+        elif tag == "select":
+            self._start_select(attr_map)
+        elif tag == "option":
+            self._handle_option(attr_map)
+        elif tag == "a":
+            self._capture_next_page(attr_map)
+
+    def handle_endtag(self, tag: str) -> None:
+        tag = tag.lower()
+        if not self.in_form:
+            return
+
+        if tag == "select":
+            self._finish_select()
+        elif tag == "form":
+            self.form_depth -= 1
+            if self.form_depth <= 0:
+                self.in_form = False
+
+    def _add_input(self, attr_map: dict[str, str]) -> None:
+        name = attr_map.get("name")
+        if not name or "disabled" in attr_map:
+            return
+
+        input_type = attr_map.get("type", "text").lower()
+        if input_type in {"button", "submit", "image", "reset", "file"}:
+            return
+        if input_type in {"checkbox", "radio"} and "checked" not in attr_map:
+            return
+
+        value = attr_map.get("value", "on" if input_type in {"checkbox", "radio"} else "")
+        self.fields.append((html.unescape(name), html.unescape(value)))
+
+    def _start_select(self, attr_map: dict[str, str]) -> None:
+        name = attr_map.get("name")
+        if not name or "disabled" in attr_map:
+            self.current_select_name = None
+            return
+
+        self.current_select_name = html.unescape(name)
+        self.current_select_selected_value = None
+        self.current_select_first_value = None
+
+    def _handle_option(self, attr_map: dict[str, str]) -> None:
+        if self.current_select_name is None or "disabled" in attr_map:
+            return
+
+        value = html.unescape(attr_map.get("value", ""))
+        if self.current_select_first_value is None:
+            self.current_select_first_value = value
+        if "selected" in attr_map:
+            self.current_select_selected_value = value
+
+    def _finish_select(self) -> None:
+        if self.current_select_name is not None:
+            value = self.current_select_selected_value
+            if value is None:
+                value = self.current_select_first_value or ""
+            self.fields.append((self.current_select_name, value))
+
+        self.current_select_name = None
+        self.current_select_selected_value = None
+        self.current_select_first_value = None
+
+    def _capture_next_page(self, attr_map: dict[str, str]) -> None:
+        if self.next_page is not None or attr_map.get("id") not in {"next", "next2"}:
+            return
+
+        href = attr_map.get("href", "")
+        normalized_href = href[2:] if href.startswith("./") else href
+        if normalized_href == ROUTE_SEARCH_PATH and attr_map.get("value"):
+            self.next_page = html.unescape(attr_map["value"])
 
 
 class RouteSearchClient:
@@ -47,7 +157,7 @@ class RouteSearchClient:
     def get_text(self, path: str) -> str:
         return self._request(path)
 
-    def post_text(self, path: str, data: dict[str, str]) -> str:
+    def post_text(self, path: str, data: dict[str, str] | list[tuple[str, str]]) -> str:
         return self._request(path, data=urlencode(data).encode("utf-8"))
 
     def _request(self, path: str, data: bytes | None = None) -> str:
@@ -99,6 +209,40 @@ def build_form_data(case: SearchCase, *, diaseq: str, hour: str, minute: str) ->
     }
 
 
+def normalize_form_data_for_json(data: list[tuple[str, str]]) -> list[dict[str, str]]:
+    return [{"name": name, "value": value} for name, value in data]
+
+
+def find_result_range(page: str) -> dict[str, int | str] | None:
+    match = re.search(r"[（(]\s*(\d+)\s*[～~\-]\s*(\d+)\s*[／/]\s*(\d+)\s*件\s*[）)]", page)
+    if not match:
+        return None
+
+    return {
+        "text": match.group(0),
+        "start": int(match.group(1)),
+        "end": int(match.group(2)),
+        "total": int(match.group(3)),
+    }
+
+
+def parse_route_search_form(page: str) -> RouteSearchFormState:
+    parser = RouteSearchFormParser()
+    parser.feed(page)
+
+    if not parser.found_form:
+        raise RuntimeError("Could not find form1 in route search response")
+
+    return RouteSearchFormState(fields=parser.fields, next_page=parser.next_page)
+
+
+def build_next_page_form_data(form_data: list[tuple[str, str]], *, page: str) -> list[tuple[str, str]]:
+    next_page_data = [(name, value) for name, value in form_data if name not in {"arrow", "page"}]
+    next_page_data.append(("arrow", "next"))
+    next_page_data.append(("page", page))
+    return next_page_data
+
+
 def run(debug_dir: Path, *, hour: str, minute: str) -> None:
     client = RouteSearchClient()
     debug_dir.mkdir(parents=True, exist_ok=True)
@@ -129,6 +273,8 @@ def run(debug_dir: Path, *, hour: str, minute: str) -> None:
         resolve_response_file = debug_dir / f"{prefix}_stop_resolver_response.txt"
         route_request_file = debug_dir / f"{prefix}_route_search_request.json"
         route_response_file = debug_dir / f"{prefix}_route_search_response.html"
+        next_page_request_file = debug_dir / f"{prefix}_route_search_next_page_request.json"
+        next_page_response_file = debug_dir / f"{prefix}_route_search_next_page_response.html"
 
         print(
             f"[{index}] POST {STOP_RESOLVE_PATH} "
@@ -160,6 +306,70 @@ def run(debug_dir: Path, *, hour: str, minute: str) -> None:
         route_response = client.post_text(ROUTE_SEARCH_PATH, form_data)
         save_text(route_response_file, route_response)
 
+        first_result_range = find_result_range(route_response)
+        next_page_summary: dict[str, object] = {
+            "found": False,
+            "first_result_range": first_result_range,
+        }
+
+        try:
+            form_state = parse_route_search_form(route_response)
+            next_page = form_state.next_page
+
+            if next_page:
+                next_page_data = build_next_page_form_data(form_state.fields, page=next_page)
+                next_page_files: dict[str, str] = {
+                    "route_search_next_page_request": str(next_page_request_file),
+                }
+
+                print(
+                    f"[{index}] POST {ROUTE_SEARCH_PATH} "
+                    f"departure={case.departure} arrival={case.arrival} "
+                    f"weekday={case.weekday} arrow=next page={next_page}"
+                )
+                save_json(
+                    next_page_request_file,
+                    {
+                        "url": BASE_URL + "/" + ROUTE_SEARCH_PATH,
+                        "method": "POST",
+                        "data_format": "ordered name/value pairs; duplicate names are preserved",
+                        "data": normalize_form_data_for_json(next_page_data),
+                    },
+                )
+
+                next_page_response = client.post_text(ROUTE_SEARCH_PATH, next_page_data)
+                save_text(next_page_response_file, next_page_response)
+                next_page_files["route_search_next_page_response"] = str(next_page_response_file)
+
+                next_result_range = find_result_range(next_page_response)
+                advanced = (
+                    first_result_range is not None
+                    and next_result_range is not None
+                    and first_result_range != next_result_range
+                )
+
+                next_page_summary = {
+                    "found": True,
+                    "page": next_page,
+                    "restored_form_field_count": len(form_state.fields),
+                    "request_data": normalize_form_data_for_json(next_page_data),
+                    "first_result_range": first_result_range,
+                    "next_result_range": next_result_range,
+                    "advanced": advanced,
+                    "files": next_page_files,
+                }
+
+                if not advanced:
+                    next_page_summary["warning"] = (
+                        "Next page response did not advance from the first result range."
+                    )
+            else:
+                print(f"[{index}] Next page link not found; skipped")
+
+        except Exception as exc:
+            next_page_summary["error"] = str(exc)
+            print(f"[{index}] WARNING: next page fetch failed: {exc}", file=sys.stderr)
+
         summary["cases"].append(
             {
                 "key": case.key,
@@ -176,6 +386,7 @@ def run(debug_dir: Path, *, hour: str, minute: str) -> None:
                     "route_search_request": str(route_request_file),
                     "route_search_response": str(route_response_file),
                 },
+                "next_page": next_page_summary,
             }
         )
 
