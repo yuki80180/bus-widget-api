@@ -14,7 +14,7 @@ ROUTE_MAP = {
     "kanazawa_station_to_uni_weekday": {
         "route": "to_uni",
         "day_type": "weekday",
-        "time_field": "arrive_time",
+        "time_field": "depart_time",
         "stop_field": "arrive_stop",
         "pole_field": "arrive_pole",
     },
@@ -64,7 +64,7 @@ def normalize_item(item: dict[str, Any]) -> dict[str, Any] | None:
         "day_type": mapping["day_type"],
         "time": item.get(mapping["time_field"]),
         "line": item.get("line"),
-        "stop": item.get(mapping["stop_field"]),
+        "stop": item.get(mapping["pole_field"]),
         "pole": item.get(mapping["pole_field"]),
         "depart_time": item.get("depart_time"),
         "depart_stop": item.get("depart_stop"),
