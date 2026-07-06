@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "scope": "route_search",
+  "reviewed": [
+    {
+      "route": "to_uni",
+      "day_type": "weekday",
+      "type": "added",
+      "key": {
+        "time": "16:53",
+        "line_normalized": "49",
+        "stop": "A"
+      },
+      "status": "confirmed",
+      "source": "hokutetsu_busstop_timetable",
+      "reviewed_note": "公式停留所時刻表で確認済み"
+    },
+    {
+      "route": "to_uni",
+      "day_type": "weekday",
+      "type": "added",
+      "key": {
+        "time": "20:41",
+        "line_normalized": "39",
+        "stop": "A"
+      },
+      "status": "confirmed",
+      "source": "hokutetsu_busstop_timetable",
+      "reviewed_note": "公式停留所時刻表で確認済み"
+    },
+    {
+      "route": "to_uni",
+      "day_type": "weekday",
+      "type": "added",
+      "key": {
+        "time": "22:11",
+        "line_normalized": "33",
+        "stop": "C"
+      },
+      "status": "confirmed",
+      "source": "hokutetsu_busstop_timetable",
+      "reviewed_note": "公式停留所時刻表で確認済み"
+    },
+    {
+      "route": "to_uni",
+      "day_type": "weekday",
+      "type": "removed",
+      "key": {
+        "time": "12:51",
+        "line_normalized": "33",
+        "stop": "A"
+      },
+      "status": "confirmed",
+      "source": "hokutetsu_busstop_timetable",
+      "reviewed_note": "公式停留所時刻表で確認済み"
+    },
+    {
+      "route": "to_uni",
+      "day_type": "weekday",
+      "type": "removed",
+      "key": {
+        "time": "16:26",
+        "line_normalized": "39",
+        "stop": "A"
+      },
+      "status": "confirmed",
+      "source": "hokutetsu_busstop_timetable",
+      "reviewed_note": "公式停留所時刻表で確認済み"
+    },
+    {
+      "route": "to_uni",
+      "day_type": "weekday",
+      "type": "removed",
+      "key": {
+        "time": "17:26",
+        "line_normalized": "39",
+        "stop": "A"
+      },
+      "status": "confirmed",
+      "source": "hokutetsu_busstop_timetable",
+      "reviewed_note": "公式停留所時刻表で確認済み"
+    },
+    {
+      "route": "to_uni",
+      "day_type": "weekday",
+      "type": "removed",
+      "key": {
+        "time": "20:41",
+        "line_normalized": "33",
+        "stop": "C"
+      },
+      "status": "confirmed",
+      "source": "hokutetsu_busstop_timetable",
+      "reviewed_note": "公式停留所時刻表で確認済み"
+    },
+    {
+      "route": "to_uni",
+      "day_type": "weekday",
+      "type": "time_change",
+      "key": {
+        "old_time": "19:36",
+        "new_time": "19:46",
+        "line_normalized": "33",
+        "stop": "C"
+      },
+      "status": "confirmed",
+      "source": "hokutetsu_busstop_timetable",
+      "reviewed_note": "公式停留所時刻表で確認済み"
+    },
+    {
+      "route": "to_uni",
+      "day_type": "weekday",
+      "type": "time_change",
+      "key": {
+        "old_time": "20:11",
+        "new_time": "20:21",
+        "line_normalized": "33",
+        "stop": "C"
+      },
+      "status": "confirmed",
+      "source": "hokutetsu_busstop_timetable",
+      "reviewed_note": "公式停留所時刻表で確認済み"
+    },
+    {
+      "route": "to_uni",
+      "day_type": "weekday",
+      "type": "time_change",
+      "key": {
+        "old_time": "21:26",
+        "new_time": "21:31",
+        "line_normalized": "33",
+        "stop": "C"
+      },
+      "status": "confirmed",
+      "source": "hokutetsu_busstop_timetable",
+      "reviewed_note": "公式停留所時刻表で確認済み"
+    }
+  ]
+}
