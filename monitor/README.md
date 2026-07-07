@@ -1,18 +1,42 @@
 # Schedule Monitor
 
-北陸鉄道の時刻検索ページから金沢工業大学の時刻表を取得し、既存の `schedule.json` と比較するための初期実装です。
+北陸鉄道の公式時刻表データと既存の `schedule.json` を比較し、変更候補を人間が確認するための監視補助ツールです。
 
-## 使い方
+この monitor 機能は自動更新機能ではありません。`schedule.json` は自動変更しません。`bus.db` も自動変更しません。確認済み候補を記録しても、その候補を自動適用する処理はありません。
 
-リポジトリ直下で実行します。取得、比較、候補表示をまとめて確認する場合は以下を使います。
+## 方針
+
+- 外部データを取得し、既存データとの差分を確認する
+- 差分や変更候補は人間が確認する
+- `schedule.json`、`bus.db`、本番APIは自動更新しない
+- 確認済み候補は表示上の注釈として扱い、比較結果から削除しない
+
+monitor には大きく2種類の確認手順があります。
+
+- 通常の停留所時刻表監視
+- route search調査
+
+## A. 通常の停留所時刻表監視
+
+北陸鉄道の停留所時刻表から金沢工業大学の時刻表を取得し、既存の `schedule.json` と比較します。
+
+### 通常実行
+
+リポジトリ直下で実行します。
 
 ```bash
 python monitor/run_check.py
 ```
 
-`run_check.py` は `fetch_schedule.py`、`compare_schedule.py`、`print_update_candidates.py` を順番に実行します。`monitor/update_candidates.json` の `added_count` と `removed_count` がどちらも `0` の場合は、最後に `更新候補なし` と表示します。
+`monitor/run_check.py` は以下を順番に実行します。
 
-個別に実行する場合は以下の順番で実行します。
+1. `monitor/fetch_schedule.py`
+2. `monitor/compare_schedule.py`
+3. `monitor/print_update_candidates.py`
+
+### 個別実行
+
+各ステップを個別に確認する場合は、以下の順番で実行します。
 
 ```bash
 python monitor/fetch_schedule.py
@@ -20,85 +44,213 @@ python monitor/compare_schedule.py
 python monitor/print_update_candidates.py
 ```
 
-`fetch_schedule.py` は `monitor/new_schedule.json` を保存します。
-`compare_schedule.py` は `schedule.json` と `monitor/new_schedule.json` を比較し、`monitor/schedule_diff.json` と `monitor/update_candidates.json` を保存します。
-`print_update_candidates.py` は `monitor/update_candidates.json` の `added` / `removed` だけを、手動確認しやすい形式で表示します。
+### 各ファイルの役割
 
-比較は `time + stop` を主キーにします。`line` だけが違う便は追加・削除ではなく `line_differences` として別に記録します。差分がある場合は終了コード `1`、差分なしの場合は `0` で終了します。
+- `monitor/fetch_schedule.py`: 北陸鉄道の停留所時刻表を取得し、`monitor/new_schedule.json` を保存する
+- `monitor/compare_schedule.py`: `schedule.json` と `monitor/new_schedule.json` を比較し、`monitor/schedule_diff.json` と `monitor/update_candidates.json` を保存する
+- `monitor/print_update_candidates.py`: `monitor/update_candidates.json` の `added` / `removed` を人間確認しやすい形式で表示する
+- `monitor/run_check.py`: 取得、比較、候補表示をまとめて実行するrunner
 
-## 発着指定検索の調査
+`monitor/compare_schedule.py` の比較キーは `time + stop` です。`line` だけが違う便は追加・削除ではなく `line_differences` として記録します。
 
-発着指定検索フォームを使った取得方法は調査中です。既存の `fetch_schedule.py` とは別に、調査用スクリプトでHTMLとPOST内容を保存します。
+### 更新候補確認対象
+
+通常の停留所時刻表監視では、更新候補確認対象を以下に絞っています。
+
+- `to_station`: 金沢工業大学 B/D 乗り場の金沢駅行き側
+- `to_nakahashi`: 金沢工業大学 B/D 乗り場の中橋方面側
+
+`to_uni` は通常監視では更新候補確認対象に含めず、`monitor/schedule_diff.json` の `investigation_only` に調査情報を出します。
+
+`monitor/update_candidates.json` は、手動確認しやすいように絞り込んだ候補ファイルです。
+
+- 対象は `to_station` と `to_nakahashi`
+- `added` と `removed` のみを出力
+- `line_differences` は含めない
+- `to_uni` は含めない
+- `to_station` では `49` 番を含む `line` を候補から除外する
+
+### weekend の扱い
+
+既存の `schedule.json` の `weekend` は1種類ですが、北陸鉄道ページは土曜日と日・祝日が分かれています。現在の `monitor/fetch_schedule.py` では `weekend` に日・祝日を使用します。
+
+## B. route search調査
+
+route search調査は、発着指定検索の結果を使って、既存の `schedule.json` と比較する調査用ワークフローです。通常監視と同じく、自動更新は行いません。
+
+現在の調査対象は平日・出発条件の以下3例です。
+
+- 金沢駅 → 金沢工業大学
+- 金沢工業大学 → 金沢駅
+- 金沢工業大学 → 中橋
+
+### runnerで実行する
+
+最新HTML取得から実行する場合:
 
 ```bash
-python monitor/research_route_search.py
+python monitor/run_route_search_check.py
 ```
 
-このスクリプトは `monitor/debug/` を作成し、以下を保存します。
+保存済みHTMLを使用して再比較する場合:
+
+```bash
+python monitor/run_route_search_check.py --skip-fetch
+```
+
+差分または確認候補がある場合に終了コード `2` とする場合:
+
+```bash
+python monitor/run_route_search_check.py --skip-fetch --fail-on-diff
+```
+
+`--skip-fetch` は `monitor/research_route_search.py` だけをスキップし、保存済みの `monitor/debug/` 配下のHTMLから抽出、正規化、比較、候補表示をやり直します。
+
+`--fail-on-diff` は `monitor/debug/route_search_compare.json` の `summary` を確認し、`added_count`、`removed_count`、`line_only_count`、`time_change_candidate_count` のいずれかが1以上なら終了コード `2` を返します。
+
+### 処理の流れ
+
+`monitor/run_route_search_check.py` は以下を順番に実行します。
+
+1. `monitor/research_route_search.py`
+2. `monitor/extract_route_search_debug.py`
+3. `monitor/convert_route_search_extracted.py`
+4. `monitor/compare_route_search_normalized.py`
+5. `monitor/print_route_search_candidates.py`
+
+処理内容は以下の流れです。
+
+```text
+route search HTML取得
+↓
+必要情報抽出
+↓
+比較用形式へ正規化
+↓
+既存データと比較
+↓
+確認候補表示
+```
+
+### 各ファイルの役割
+
+- `monitor/research_route_search.py`: 発着指定検索のHTML、POST内容、ページ送り結果を `monitor/debug/` に保存する
+- `monitor/extract_route_search_debug.py`: 保存済みHTMLから発着時刻、停留所、乗り場、系統などを抽出し、`monitor/debug/route_search_extracted.json` を保存する
+- `monitor/convert_route_search_extracted.py`: 抽出結果を `route` / `day_type` / `time` / `line` / `stop` を持つ比較用形式に正規化し、`monitor/debug/route_search_normalized.json` を保存する
+- `monitor/compare_route_search_normalized.py`: `schedule.json` と `monitor/debug/route_search_normalized.json` を比較し、`monitor/debug/route_search_compare.json` を保存する
+- `monitor/print_route_search_candidates.py`: `monitor/debug/route_search_compare.json` を読み、人間確認用の候補一覧を表示する
+- `monitor/run_route_search_check.py`: route search調査パイプラインをまとめて実行するrunner
+
+### route search取得ファイル
+
+`monitor/research_route_search.py` は `monitor/debug/` に以下のようなファイルを保存します。
 
 - `01_pathway.html`: 発着指定検索フォームのHTML
 - `*_stop_resolver_request.json`: `phpscript/hpjpp0500.php` に送信した停留所確認用POSTデータ
 - `*_stop_resolver_response.txt`: 停留所確認レスポンス
 - `*_route_search_request.json`: `pathway_timetable.php` に送信した発着検索POSTデータ
 - `*_route_search_response.html`: 発着検索結果HTML
-- `00_route_search_summary.json`: URL、POSTパラメータ、保存ファイルの一覧
+- `*_route_search_page_XX_request.json`: ページ送り用POSTデータ
+- `*_route_search_page_XX_response.html`: ページ送り後の発着検索結果HTML
+- `00_route_search_summary.json`: URL、POSTパラメータ、保存ファイル、ページ情報の一覧
 
-調査対象は平日・出発条件で、以下の3例です。
+ページ送りでは、検索結果HTML内の `form name="form1"` から input/select の値を復元し、`id="next"` または `id="next2"` の `value` を `page` として `pathway_timetable.php` にPOSTします。
 
-- 金沢駅 → 金沢工業大学
-- 金沢工業大学 → 金沢駅
-- 金沢工業大学 → 中橋
-
-デフォルトの検索時刻は `07:00` です。必要に応じて `--hour` と `--minute` を指定できます。
+`monitor/research_route_search.py` のデフォルト検索時刻は `07:00` です。必要に応じて個別に `--hour` と `--minute` を指定できます。
 
 ```bash
 python monitor/research_route_search.py --hour 08 --minute 30
 ```
 
-この調査スクリプトは自動更新には使いません。`schedule.json` や `bus.db` は変更しません。
+### 中間・比較JSON
 
-## update_candidates.json
+- `monitor/debug/route_search_extracted.json`: route search HTMLから抽出した生寄りのデータ
+- `monitor/debug/route_search_normalized.json`: `schedule.json` と比較しやすい形に正規化したデータ
+- `monitor/debug/route_search_compare.json`: 既存データとroute search正規化結果の比較結果
 
-`monitor/update_candidates.json` は、DB更新候補を目視しやすくするための絞り込みファイルです。
+`monitor/debug/route_search_compare.json` では、各 `route/day_type` に以下を出力します。
 
-- 対象は `to_station` と `to_nakahashi` のみ
-- `added` と `removed` のみを出力
-- `line_differences` は含めない
-- `to_uni` は含めない
-- `to_station` では `49` 番を含む `line` を候補から除外する
+- `added`: 既存データにはなく、route search側に存在する便
+- `removed`: 既存データにはあるが、route search側に存在しない便
+- `line_only`: 時刻と乗り場は一致しているが、系統情報だけに差がある便
+- `time_change_candidates`: `added` と `removed` の中から、系統や乗り場が近く、時刻変更の可能性がある組み合わせを人間確認用に表示する候補
 
-直近の差分で出ていた `to_station/weekday` の `07:25`、`B` 乗り場、`(49/39) 泉野・金沢駅行` は、49番を含むため更新候補から除外します。
+`time_change_candidates` は、`added` / `removed` の生差分を削除したり置き換えたりしません。人間確認を補助するために、追加情報として重ねて表示する候補です。
 
-## 更新対象
+### route search比較時の正規化
 
-現時点で自動更新の比較対象にするのは以下だけです。
+`monitor/compare_route_search_normalized.py` の比較キーは `time + stop` です。`line` は比較キーに含めません。
 
-- `to_station`: 金沢工業大学 B/D 乗り場の金沢駅行き側
-- `to_nakahashi`: 金沢工業大学 B/D 乗り場の中橋方面側
+系統比較では、表記差による不要な差分を減らすため、系統番号を正規化して比較します。たとえば括弧付きの系統番号や数字だけの系統表記を、同じ番号として扱います。
 
-`to_uni` は取得元が既存 `schedule.json` とずれている可能性が高いため、自動更新対象から外し、`schedule_diff.json` の `investigation_only` に調査情報だけを出します。
+`to_station/weekday` の比較では、正規化後の `line` が `49` の便を、既存データ側とroute search側の両方で比較対象外にします。
 
-## to_uni 調査メモ
+## レビュー済み候補管理
 
-直近の調査では、既存 `schedule.json` と新取得結果の時刻一致数がかなり少ない状態でした。
+`monitor/route_search_reviewed_candidates.json` は、人間がすでに確認したroute search候補を記録し、再表示時に確認済みか未確認かを区別するための管理ファイルです。
 
-- `to_uni/weekday`: 既存55件、新取得53件、同じ時刻は2件
-- `to_uni/weekend`: 既存35件、新取得10件、同じ時刻は1件
+`monitor/print_route_search_candidates.py` は、このファイルが存在する場合だけ読み込み、候補表示に以下の注釈を付けます。
 
-既存の `to_uni` は金沢駅方面などから大学へ向かう「大学行き」の便を持っている一方、現在の取得処理は金沢工業大学 A/C 乗り場の時刻表から、大学停留所を出発して先へ進む便を拾っている可能性があります。
+- `[未確認]`: まだレビュー記録がない候補
+- `[確認済み]`: レビュー済み候補
+- `[確認済み: 時刻変更対応]`: 時刻変更候補として確認済みの候補に対応する `added` / `removed`
 
-また `to_uni/weekend` は新取得結果に C 乗り場が出ておらず、既存の A/C 構成とも合っていません。土曜と日・祝日の違いだけでは、35件から10件への減少は説明できません。
+レビュー済み候補は表示から削除しません。確認済み注釈は、毎回同じ候補を再確認する負担を減らすための表示上の区別です。
 
-## weekend の扱い
+レビュー済み候補を記録しても、以下は変わりません。
 
-既存の `weekend` は1種類ですが、北陸鉄道ページは土曜日と日・祝日が分かれています。この初期実装では `weekend` に日・祝日を使用しています。
+- Summary件数
+- `added` / `removed` などの生差分
+- `monitor/debug/route_search_compare.json` の比較結果
 
-調査時点では `to_station` と `to_nakahashi` は土曜・日祝の時刻が同じで、既存 `schedule.json` の `weekend` とも時刻が一致していました。
+### スキーマ例
+
+`monitor/route_search_reviewed_candidates.json` は以下の形式です。
+
+```json
+{
+  "schema_version": 1,
+  "scope": "route_search",
+  "reviewed": [
+    {
+      "route": "to_uni",
+      "day_type": "weekday",
+      "type": "added",
+      "key": {
+        "time": "16:53",
+        "line_normalized": "49",
+        "stop": "A"
+      },
+      "status": "confirmed",
+      "source": "hokutetsu_busstop_timetable",
+      "reviewed_note": "公式停留所時刻表で確認済み"
+    },
+    {
+      "route": "to_uni",
+      "day_type": "weekday",
+      "type": "time_change",
+      "key": {
+        "old_time": "19:36",
+        "new_time": "19:46",
+        "line_normalized": "33",
+        "stop": "C"
+      },
+      "status": "confirmed",
+      "source": "hokutetsu_busstop_timetable",
+      "reviewed_note": "公式停留所時刻表で確認済み"
+    }
+  ]
+}
+```
+
+`removed` の確認済み候補は、`type` を `removed` にし、`key.time`、`key.line_normalized`、`key.stop` で記録します。
+
+## to_uni の扱い
+
+`to_uni` は通常の停留所時刻表監視では更新候補確認対象に含めず、調査対象として扱います。現在は route search調査パイプラインと `monitor/route_search_reviewed_candidates.json` によって、確認済み候補を表示上区別しながら継続確認します。
+
+過去の取得元差異に関するメモは、現在の運用手順とは分けて扱います。現在の運用では、route searchの抽出、正規化、比較、候補表示、レビュー済み注釈を使って確認します。
 
 ## 変更範囲
 
-この監視機能は `monitor/` 配下だけで完結します。既存の `app.py`、`bus.db`、`Scriptable_Scripts/` は変更しません。DB更新や `schedule.json` の上書きは、この段階では行いません。
-- `*_route_search_next_page_request.json`: 最初の発着検索結果HTMLから復元したフォームデータに `arrow=next` と `page` を追加した次の件ページ用POSTデータ
-- `*_route_search_next_page_response.html`: 次の件ページの発着検索結果HTML
-
-「次の件」ページの調査取得では、最初の検索結果HTML内の `form name="form1"` から input/select の値を復元し、`id="next"` または `id="next2"` の `value` を `page` として `pathway_timetable.php` にPOSTする。これにより、例として `uni_to_nakahashi_weekday` では `2～6／24件` から `7～11／24件` に進むことを確認した。
+monitor は確認用のファイルを `monitor/` と `monitor/debug/` 配下に保存します。既存の `app.py`、`bus.db`、`Scriptable_Scripts/` は変更しません。DB更新や `schedule.json` の上書きは行いません。
