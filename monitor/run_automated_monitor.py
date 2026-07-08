@@ -196,7 +196,10 @@ def send_discord_notification(message: str) -> None:
     request = Request(
         webhook_url,
         data=body,
-        headers={"Content-Type": "application/json; charset=utf-8"},
+        headers={
+            "Content-Type": "application/json; charset=utf-8",
+            "User-Agent": "DiscordBot (https://github.com/yuki80180/bus-widget-api, 1.0)",
+        },
         method="POST",
     )
     try:
