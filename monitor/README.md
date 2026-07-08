@@ -185,6 +185,120 @@ python monitor/research_route_search.py --hour 08 --minute 30
 
 `to_station/weekday` の比較では、正規化後の `line` が `49` の便を、既存データ側とroute search側の両方で比較対象外にします。
 
+## GitHub Actions自動monitorとDiscord通知
+
+自動monitorは `.github/workflows/bus-monitor.yml` の `Bus Monitor` workflowで実行します。実行方法は定期実行と手動実行の2つです。
+
+- `schedule`: 毎日 日本時間05:17
+- `workflow_dispatch`: GitHub Actions画面からの手動実行
+- `cron`: `17 5 * * *`
+- `timezone`: `Asia/Tokyo`
+- Python: `3.13`
+
+自動実行のrunnerは `monitor/run_automated_monitor.py` です。処理順は以下です。
+
+```text
+通常monitor実行
+↓
+route search monitor実行
+↓
+JSON読込
+↓
+summary件数取得
+↓
+論理差分payload生成
+↓
+canonical JSON化
+↓
+SHA-256 fingerprint生成
+↓
+前回fingerprintと比較
+↓
+差分内容が変化し、現在差分ありの場合だけDiscord通知
+↓
+state保存
+```
+
+### fingerprint仕様
+
+fingerprintは、人間が確認すべき論理差分だけを対象にします。
+
+- 通常monitor: `monitor/update_candidates.json` の `routes` 配下
+- route search: `monitor/debug/route_search_compare.json` の `routes -> route -> day_type` 配下にある以下4カテゴリ
+  - `added`
+  - `removed`
+  - `line_only`
+  - `time_change_candidates`
+
+以下はfingerprint対象外です。
+
+- `summary`
+- `count` / `*_count`
+- `comparison_key`
+- `line_comparison`
+- `generated_at`
+- GitHub Actions run ID
+- path
+- request / responseデバッグ情報
+
+canonical JSONは以下の設定で生成します。
+
+```python
+json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+```
+
+生成したcanonical JSONのUTF-8バイト列に対してSHA-256を計算します。
+
+### 状態管理
+
+前回fingerprintは `.monitor_state/last_diff_hash.txt` に保存します。GitHub Actionsでは `.monitor_state/` をcacheします。
+
+- cache path: `.monitor_state/`
+- cache key: `bus-monitor-state-${{ github.ref_name }}-${{ github.run_id }}`
+- restore-keys:
+  - `bus-monitor-state-${{ github.ref_name }}-`
+  - `bus-monitor-state-`
+
+### 通知条件
+
+Discord通知は「差分内容が変化し、現在差分あり」の場合だけ行います。
+
+- 前回状態なし + 差分なし: 通知なし、保存
+- 前回状態なし + 差分あり: Discord通知、送信成功後に保存
+- 同一差分: 通知なし、保存
+- 異なる差分 + 現在差分あり: Discord通知、送信成功後に保存
+- 異なる差分 + 現在差分なし: 通知なし、保存
+
+差分ありから差分なしになった後、同じ差分が再発した場合は、前回fingerprintと異なるため再通知します。
+
+Discord通知が必要な場合に送信へ失敗したときは、stateを保存せず非0終了します。通知不要時は `DISCORD_WEBHOOK_URL` が未設定でも正常終了できます。
+
+### Discord通知
+
+Discord Webhook URLはGitHub Actions repository secretの `DISCORD_WEBHOOK_URL` から取得します。
+
+通知は確認依頼です。`schedule.json` / `bus.db` は自動更新しません。
+
+Discord Webhookリクエストでは、Cloudflare 1010対策としてUser-Agentを明示します。
+
+```text
+User-Agent: DiscordBot (https://github.com/yuki80180/bus-widget-api, 1.0)
+```
+
+### 実環境確認済み
+
+以下は実環境のGitHub Actionsで確認済みです。
+
+- monitor自動実行
+- route search自動実行
+- 差分summary取得
+- fingerprint生成
+- Discord通知
+- state保存
+- Actions cache復元
+- 前回fingerprint比較
+- 同一差分通知抑制
+
 ## レビュー済み候補管理
 
 `monitor/route_search_reviewed_candidates.json` は、人間がすでに確認したroute search候補を記録し、再表示時に確認済みか未確認かを区別するための管理ファイルです。
