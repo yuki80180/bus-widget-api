@@ -1,5 +1,7 @@
 import os
+import re
 import sqlite3
+from contextlib import closing
 from datetime import datetime
 from pathlib import Path
 
@@ -10,6 +12,33 @@ app = Flask(__name__)
 BASE_DIR = Path(__file__).resolve().parent
 DB_PATH = BASE_DIR / os.environ.get("BUS_DB_PATH", "bus.db")
 VALID_DIRECTIONS = {"to_uni", "to_station", "to_nakahashi"}
+STOP_NAMES = {
+    "A": "正門向い",
+    "B": "正門前",
+    "C": "四十万方向",
+    "D": "四十万から",
+}
+DIRECTION_DETAILS = {
+    "to_uni": {
+        "label": "KIT行き",
+        "from": "金沢駅・中橋方面",
+        "to": "KIT",
+        "destination": "金沢工業大学行",
+    },
+    "to_station": {
+        "label": "金沢駅行き",
+        "from": "KIT",
+        "to": "金沢駅",
+        "destination": "金沢駅行",
+    },
+    "to_nakahashi": {
+        "label": "中橋行き",
+        "from": "KIT",
+        "to": "中橋",
+        "destination": "中橋方面行",
+    },
+}
+LINE_NUMBER_PATTERN = re.compile(r"\((\d+)\)")
 
 
 def get_day_type(now):
@@ -25,8 +54,19 @@ def get_db_connection():
     return conn
 
 
+def minutes_until(departure_time, current_time):
+    departure_hour, departure_minute = map(int, departure_time.split(":"))
+    current_hour, current_minute = map(int, current_time.split(":"))
+    return (departure_hour * 60 + departure_minute) - (current_hour * 60 + current_minute)
+
+
+def extract_line_number(line):
+    match = LINE_NUMBER_PATTERN.search(line)
+    return match.group(1) if match else None
+
+
 def fetch_next_buses(direction, day_type, current_time):
-    with get_db_connection() as conn:
+    with closing(get_db_connection()) as conn:
         rows = conn.execute(
             """
             SELECT time, line, stop
@@ -42,7 +82,10 @@ def fetch_next_buses(direction, day_type, current_time):
         {
             "time": row["time"],
             "line": row["line"],
+            "line_number": extract_line_number(row["line"]),
             "stop": row["stop"],
+            "stop_name": STOP_NAMES.get(row["stop"], row["stop"]),
+            "minutes_until": minutes_until(row["time"], current_time),
         }
         for row in rows
     ]
@@ -87,6 +130,8 @@ def api_next_bus():
             "status": "success",
             "current_time": current_time,
             "day_type": day_type,
+            "direction": direction,
+            "direction_detail": DIRECTION_DETAILS[direction],
             "buses": next_buses,
         })
 
@@ -94,6 +139,8 @@ def api_next_bus():
         "status": "end",
         "current_time": current_time,
         "day_type": day_type,
+        "direction": direction,
+        "direction_detail": DIRECTION_DETAILS[direction],
     })
 
 

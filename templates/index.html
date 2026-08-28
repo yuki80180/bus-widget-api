@@ -2,260 +2,653 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#f4f7f8" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#111719" media="(prefers-color-scheme: dark)">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>バス時刻表 Dashboard</title>
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="KIT Bus">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.webmanifest') }}">
+    <link rel="icon" href="{{ url_for('static', filename='app-icon.svg') }}" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='app-icon.svg') }}">
+    <title>KIT Bus</title>
     <style>
         :root {
-            --bg-color: #000000;
-            --card-bg: #1c1c1e;
-            --text-main: #ffffff;
-            --text-sub: #d1d1d6;
-            --orange: #ff9f0a;
-            --blue: #32ade6;
-            --green: #30d158;
-            --red: #ff453a;
-            --badge-bg: #2c2c2e;
-            --badge-text: #ffd60a;
+            color-scheme: light dark;
+            --page: #f4f7f8;
+            --surface: #ffffff;
+            --surface-subtle: #e8eef0;
+            --text: #102126;
+            --muted: #617278;
+            --border: #d5dfe2;
+            --accent: #006b5f;
+            --accent-strong: #00564d;
+            --accent-soft: #d9f0eb;
+            --focus: #147dce;
+            --danger: #a92e2e;
+            --shadow: 0 10px 32px rgba(19, 42, 48, 0.08);
         }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            min-height: 100%;
+            background: var(--page);
+        }
+
         body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
             margin: 0;
-            padding: 20px;
-            padding-top: calc(20px + env(safe-area-inset-top));
+            background: var(--page);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            letter-spacing: 0;
         }
-        .header {
+
+        button {
+            font: inherit;
+        }
+
+        button:focus-visible {
+            outline: 3px solid color-mix(in srgb, var(--focus) 60%, transparent);
+            outline-offset: 2px;
+        }
+
+        .app-shell {
+            width: min(100%, 680px);
+            min-height: 100vh;
+            margin: 0 auto;
+            padding: calc(18px + env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) calc(24px + env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
+        }
+
+        .topbar {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
+            min-height: 48px;
             margin-bottom: 20px;
         }
-        h1 {
-            font-size: 20px;
-            margin: 0;
-            font-weight: bold;
-        }
-        .refresh-btn {
-            background-color: var(--card-bg);
-            border: 1px solid #3a3a3c;
-            color: var(--text-main);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .refresh-btn:active {
-            background-color: #2c2c2e;
-        }
-        .refresh-btn:disabled {
-            cursor: default;
-            opacity: 0.65;
-        }
-        .container {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 16px;
-            padding: 16px;
-        }
-        .card-title {
-            font-size: 14px;
-            font-weight: bold;
-            color: var(--text-sub);
-            margin-bottom: 12px;
+
+        .brand {
             display: flex;
             align-items: center;
-            gap: 6px;
-        }
-        .bus-list {
-            display: flex;
-            flex-direction: column;
             gap: 10px;
         }
-        .bus-row {
-            display: flex;
-            align-items: center;
-            font-size: 16px;
-        }
-        .label {
-            font-weight: bold;
-            width: 52px;
-            font-size: 13px;
-            flex-shrink: 0;
-        }
-        .label-0 { color: var(--orange); }
-        .label-1 { color: var(--blue); }
-        .label-2 { color: var(--green); }
-        .time {
-            font-weight: 700;
-            font-size: 20px;
-            width: 65px;
-            flex-shrink: 0;
-        }
-        .bus-row.primary .time {
-            font-size: 26px;
-            width: 75px;
-        }
-        .stop-badge {
-            background-color: var(--badge-bg);
-            color: var(--badge-text);
-            font-size: 10px;
+
+        .brand-mark {
+            display: grid;
+            width: 34px;
+            height: 34px;
+            place-items: center;
+            border-radius: 7px;
+            background: var(--accent);
+            color: #ffffff;
+            font-size: 11px;
             font-weight: 800;
-            padding: 4px 6px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 21px;
+            line-height: 1.2;
+        }
+
+        .refresh-button {
+            display: inline-flex;
+            min-height: 44px;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            padding: 0 14px;
+            background: var(--surface);
+            color: var(--text);
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .refresh-button:disabled {
+            cursor: wait;
+            opacity: 0.6;
+        }
+
+        .refresh-icon {
+            font-size: 20px;
+            line-height: 1;
+        }
+
+        .direction-tabs {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 4px;
+            padding: 4px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--surface-subtle);
+        }
+
+        .direction-tab {
+            min-height: 46px;
+            border: 0;
             border-radius: 6px;
-            margin-right: 8px;
-            white-space: nowrap;
-            border: 1px solid #48484a;
+            padding: 6px;
+            background: transparent;
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.25;
+            cursor: pointer;
+        }
+
+        .direction-tab[aria-selected="true"] {
+            background: var(--surface);
+            color: var(--accent-strong);
+            box-shadow: 0 1px 4px rgba(19, 42, 48, 0.12);
+        }
+
+        .route-heading {
+            margin: 28px 0 16px;
+        }
+
+        .route-kicker {
+            margin: 0 0 5px;
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .route-title {
+            display: flex;
+            align-items: baseline;
+            gap: 9px;
+            margin: 0;
+            font-size: clamp(24px, 8vw, 34px);
+            line-height: 1.2;
+        }
+
+        .route-arrow {
+            color: var(--accent);
+            font-size: 0.8em;
+        }
+
+        .panel {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--surface);
+            box-shadow: var(--shadow);
+        }
+
+        .loading-panel,
+        .message-panel {
+            display: grid;
+            min-height: 330px;
+            place-items: center;
+            padding: 32px 24px;
+            text-align: center;
+        }
+
+        .message-title {
+            margin: 0 0 8px;
+            font-size: 20px;
+        }
+
+        .message-text {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .retry-button {
+            min-height: 44px;
+            margin-top: 20px;
+            border: 0;
+            border-radius: 7px;
+            padding: 0 18px;
+            background: var(--accent);
+            color: #ffffff;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .next-bus {
+            padding: 24px;
+        }
+
+        .section-label {
+            margin: 0;
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .departure-row {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 16px;
+            margin-top: 8px;
+        }
+
+        .departure-time {
+            margin: 0;
+            font-size: clamp(68px, 22vw, 104px);
+            font-variant-numeric: tabular-nums;
+            font-weight: 780;
+            line-height: 0.95;
+        }
+
+        .remaining-time {
             flex-shrink: 0;
-        }
-        .line {
-            color: var(--text-sub);
-            font-size: 12px;
+            margin: 0 0 8px;
+            border-radius: 6px;
+            padding: 7px 10px;
+            background: var(--accent-soft);
+            color: var(--accent-strong);
+            font-size: 17px;
+            font-weight: 800;
             white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            flex: 1;
         }
-        .status-msg {
-            color: var(--red);
-            font-weight: bold;
+
+        .bus-details {
+            display: grid;
+            gap: 7px;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .line-number {
+            font-size: 17px;
+            font-weight: 800;
+        }
+
+        .destination {
             font-size: 16px;
-            padding: 4px 0;
+            font-weight: 650;
         }
-        .status-msg.warning {
-            color: var(--orange);
+
+        .stop {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .following {
+            margin-top: 14px;
+            padding: 18px 20px;
+        }
+
+        .following-list {
+            display: grid;
+            margin: 12px 0 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .following-item {
+            display: grid;
+            grid-template-columns: 68px minmax(0, 1fr) auto;
+            min-height: 58px;
+            align-items: center;
+            gap: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .following-item:first-child {
+            border-top: 0;
+        }
+
+        .following-time {
+            font-size: 25px;
+            font-variant-numeric: tabular-nums;
+            font-weight: 750;
+        }
+
+        .following-line {
+            min-width: 0;
+            overflow: hidden;
+            color: var(--muted);
+            font-size: 13px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .following-remaining {
+            color: var(--accent-strong);
+            font-size: 13px;
+            font-weight: 750;
+            white-space: nowrap;
+        }
+
+        .updated-at {
+            margin: 16px 2px 0;
+            color: var(--muted);
+            font-size: 12px;
+            text-align: right;
+        }
+
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+
+        @media (max-width: 390px) {
+            .app-shell {
+                padding-right: max(14px, env(safe-area-inset-right));
+                padding-left: max(14px, env(safe-area-inset-left));
+            }
+
+            .next-bus {
+                padding: 20px;
+            }
+
+            .departure-row {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .remaining-time {
+                margin-bottom: 0;
+            }
+
+            .following-item {
+                grid-template-columns: 64px minmax(0, 1fr);
+            }
+
+            .following-remaining {
+                grid-column: 2;
+                margin-top: -10px;
+                padding-bottom: 8px;
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --page: #111719;
+                --surface: #192225;
+                --surface-subtle: #202c30;
+                --text: #edf4f5;
+                --muted: #a6b6ba;
+                --border: #354449;
+                --accent: #46c7b6;
+                --accent-strong: #77dfd0;
+                --accent-soft: #173f3a;
+                --focus: #57aeea;
+                --danger: #ff8d8d;
+                --shadow: none;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1 id="current-clock">00:00</h1>
-        <button id="refresh-button" class="refresh-btn" type="button" onclick="updateAllLists()">更新</button>
-    </div>
+    <main class="app-shell">
+        <header class="topbar">
+            <div class="brand">
+                <span class="brand-mark" aria-hidden="true">KIT</span>
+                <h1>KIT Bus</h1>
+            </div>
+            <button id="refresh-button" class="refresh-button" type="button" title="最新情報に更新">
+                <span class="refresh-icon" aria-hidden="true">↻</span>
+                <span>更新</span>
+            </button>
+        </header>
 
-    <div class="container">
-        <div class="card">
-            <div class="card-title">🚌 大学行き</div>
-            <div id="list-to_uni" class="bus-list">読み込み中...</div>
+        <div class="direction-tabs" role="tablist" aria-label="行き先">
+            <button class="direction-tab" type="button" role="tab" aria-selected="true" data-direction="to_uni">KIT行き</button>
+            <button class="direction-tab" type="button" role="tab" aria-selected="false" data-direction="to_station">金沢駅行き</button>
+            <button class="direction-tab" type="button" role="tab" aria-selected="false" data-direction="to_nakahashi">中橋行き</button>
         </div>
 
-        <div class="card">
-            <div class="card-title">🚌 金沢駅行き</div>
-            <div id="list-to_station" class="bus-list">読み込み中...</div>
-        </div>
+        <section aria-live="polite" aria-busy="true" id="bus-section">
+            <div class="route-heading">
+                <p class="route-kicker">現在の方向</p>
+                <h2 class="route-title">
+                    <span id="route-from">金沢駅・中橋方面</span>
+                    <span class="route-arrow" aria-hidden="true">→</span>
+                    <span id="route-to">KIT</span>
+                </h2>
+            </div>
 
-        <div class="card">
-            <div class="card-title">🚌 中橋行き</div>
-            <div id="list-to_nakahashi" class="bus-list">読み込み中...</div>
-        </div>
-    </div>
+            <div id="loading-state" class="panel loading-panel">
+                <p class="message-text">バス情報を取得しています</p>
+            </div>
+
+            <div id="success-state" hidden>
+                <article class="panel next-bus">
+                    <p class="section-label">次のバス</p>
+                    <div class="departure-row">
+                        <p id="next-time" class="departure-time">--:--</p>
+                        <p id="next-remaining" class="remaining-time">--</p>
+                    </div>
+                    <div class="bus-details">
+                        <div id="next-line" class="line-number"></div>
+                        <div id="next-destination" class="destination"></div>
+                        <div id="next-stop" class="stop"></div>
+                    </div>
+                </article>
+
+                <section id="following-panel" class="panel following">
+                    <p class="section-label">このあとのバス</p>
+                    <ol id="following-list" class="following-list"></ol>
+                </section>
+            </div>
+
+            <div id="end-state" class="panel message-panel" hidden>
+                <div>
+                    <p class="message-title">本日の運行は終了しました</p>
+                    <p class="message-text">次の運行日に、最新の時刻をご確認ください。</p>
+                </div>
+            </div>
+
+            <div id="error-state" class="panel message-panel" hidden>
+                <div>
+                    <p class="message-title">バス情報を取得できませんでした</p>
+                    <p class="message-text">通信状態を確認して、もう一度お試しください。</p>
+                    <button id="retry-button" class="retry-button" type="button">再読み込み</button>
+                </div>
+            </div>
+
+            <p id="updated-at" class="updated-at" hidden>最終更新 --:--</p>
+            <p id="screen-reader-status" class="visually-hidden" role="status"></p>
+        </section>
+    </main>
 
     <script>
-        const routes = [
-            { id: 'to_uni', badgeLabel: '着' },
-            { id: 'to_station', badgeLabel: '発' },
-            { id: 'to_nakahashi', badgeLabel: '発' }
-        ];
-        const labels = ['次発', '次々', '3本目'];
-
-        const stopNameMap = {
-            'A': '正門向い',
-            'B': '正門前',
-            'C': '四十万方向',
-            'D': '四十万から'
+        const directions = {
+            to_uni: { from: '金沢駅・中橋方面', to: 'KIT' },
+            to_station: { from: 'KIT', to: '金沢駅' },
+            to_nakahashi: { from: 'KIT', to: '中橋' }
         };
 
-        let isUpdating = false;
+        const state = {
+            direction: 'to_uni',
+            requestId: 0
+        };
 
-        function createText(className, text) {
-            const element = document.createElement('div');
-            element.className = className;
-            element.textContent = text;
-            return element;
+        const elements = {
+            busSection: document.getElementById('bus-section'),
+            routeFrom: document.getElementById('route-from'),
+            routeTo: document.getElementById('route-to'),
+            loading: document.getElementById('loading-state'),
+            success: document.getElementById('success-state'),
+            end: document.getElementById('end-state'),
+            error: document.getElementById('error-state'),
+            nextTime: document.getElementById('next-time'),
+            nextRemaining: document.getElementById('next-remaining'),
+            nextLine: document.getElementById('next-line'),
+            nextDestination: document.getElementById('next-destination'),
+            nextStop: document.getElementById('next-stop'),
+            followingPanel: document.getElementById('following-panel'),
+            followingList: document.getElementById('following-list'),
+            updatedAt: document.getElementById('updated-at'),
+            status: document.getElementById('screen-reader-status'),
+            refreshButton: document.getElementById('refresh-button'),
+            retryButton: document.getElementById('retry-button')
+        };
+
+        function setView(view) {
+            elements.loading.hidden = view !== 'loading';
+            elements.success.hidden = view !== 'success';
+            elements.end.hidden = view !== 'end';
+            elements.error.hidden = view !== 'error';
+            elements.busSection.setAttribute('aria-busy', String(view === 'loading'));
         }
 
-        function renderMessage(container, message, className) {
-            container.textContent = '';
-            container.appendChild(createText(className || 'status-msg', message));
+        function formatRemaining(minutes) {
+            if (!Number.isInteger(minutes) || minutes <= 1) {
+                return 'まもなく';
+            }
+            return `あと${minutes}分`;
         }
 
-        function renderBus(container, route, bus, index) {
-            const row = document.createElement('div');
-            row.className = 'bus-row' + (index === 0 ? ' primary' : '');
-
-            const stopName = stopNameMap[bus.stop] || bus.stop || '-';
-            const badgeText = route.badgeLabel + ': ' + stopName;
-
-            row.appendChild(createText('label label-' + index, labels[index] || ''));
-            row.appendChild(createText('time', bus.time || '--:--'));
-            row.appendChild(createText('stop-badge', badgeText));
-            row.appendChild(createText('line', bus.line || ''));
-            container.appendChild(row);
+        function formatLine(bus) {
+            if (bus.line_number) {
+                return `${bus.line_number}系統`;
+            }
+            return bus.line || '系統情報なし';
         }
 
-        async function fetchRoute(route) {
-            const container = document.getElementById('list-' + route.id);
+        function formatStop(bus) {
+            const stopName = bus.stop_name || bus.stop;
+            if (!stopName) {
+                return 'のりば情報なし';
+            }
+            return bus.stop ? `${bus.stop}のりば・${stopName}` : stopName;
+        }
+
+        function updateDirectionHeading(detail) {
+            const fallback = directions[state.direction];
+            elements.routeFrom.textContent = detail?.from || fallback.from;
+            elements.routeTo.textContent = detail?.to || fallback.to;
+        }
+
+        function createFollowingItem(bus) {
+            const item = document.createElement('li');
+            item.className = 'following-item';
+
+            const time = document.createElement('span');
+            time.className = 'following-time';
+            time.textContent = bus.time || '--:--';
+
+            const line = document.createElement('span');
+            line.className = 'following-line';
+            line.textContent = formatLine(bus);
+
+            const remaining = document.createElement('span');
+            remaining.className = 'following-remaining';
+            remaining.textContent = formatRemaining(bus.minutes_until);
+
+            item.append(time, line, remaining);
+            return item;
+        }
+
+        function renderSuccess(data) {
+            const [nextBus, ...followingBuses] = data.buses;
+            updateDirectionHeading(data.direction_detail);
+            elements.nextTime.textContent = nextBus.time || '--:--';
+            elements.nextRemaining.textContent = formatRemaining(nextBus.minutes_until);
+            elements.nextLine.textContent = formatLine(nextBus);
+            elements.nextDestination.textContent = data.direction_detail?.destination || '';
+            elements.nextStop.textContent = formatStop(nextBus);
+
+            elements.followingList.replaceChildren(...followingBuses.map(createFollowingItem));
+            elements.followingPanel.hidden = followingBuses.length === 0;
+            elements.status.textContent = `次のバスは${elements.nextTime.textContent}、${elements.nextRemaining.textContent}です`;
+            setView('success');
+        }
+
+        function markUpdated() {
+            const time = new Intl.DateTimeFormat('ja-JP', {
+                hour: '2-digit',
+                minute: '2-digit'
+            }).format(new Date());
+            elements.updatedAt.textContent = `最終更新 ${time}`;
+            elements.updatedAt.hidden = false;
+        }
+
+        async function loadBuses() {
+            const requestId = ++state.requestId;
+            setView('loading');
+            elements.refreshButton.disabled = true;
+            elements.status.textContent = 'バス情報を更新しています';
 
             try {
-                const response = await fetch('/api/next_bus?dir=' + encodeURIComponent(route.id), {
-                    cache: 'no-store'
+                const response = await fetch(`/api/next_bus?dir=${encodeURIComponent(state.direction)}`, {
+                    cache: 'no-store',
+                    headers: { Accept: 'application/json' }
                 });
                 const data = await response.json();
 
+                if (requestId !== state.requestId) {
+                    return;
+                }
                 if (!response.ok || data.status === 'error') {
-                    renderMessage(container, '時刻表を取得できません', 'status-msg warning');
-                    return;
+                    throw new Error('API response error');
                 }
 
+                markUpdated();
+                updateDirectionHeading(data.direction_detail);
                 if (data.status === 'success' && Array.isArray(data.buses) && data.buses.length > 0) {
-                    container.textContent = '';
-                    data.buses.forEach(function(bus, index) {
-                        renderBus(container, route, bus, index);
-                    });
-                    return;
+                    renderSuccess(data);
+                } else if (data.status === 'end') {
+                    elements.status.textContent = '本日の運行は終了しました';
+                    setView('end');
+                } else {
+                    throw new Error('Unexpected API response');
                 }
-
-                if (data.status === 'end') {
-                    renderMessage(container, '本日のバスは終了しました', 'status-msg');
-                    return;
-                }
-
-                renderMessage(container, 'データ形式が変わりました', 'status-msg warning');
             } catch (error) {
-                renderMessage(container, '通信エラー', 'status-msg warning');
-            }
-        }
-
-        async function updateAllLists() {
-            if (isUpdating) {
-                return;
-            }
-
-            isUpdating = true;
-            const refreshButton = document.getElementById('refresh-button');
-            refreshButton.disabled = true;
-
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
-            document.getElementById('current-clock').textContent = timeStr;
-
-            try {
-                await Promise.all(routes.map(fetchRoute));
+                if (requestId === state.requestId) {
+                    elements.status.textContent = 'バス情報を取得できませんでした';
+                    setView('error');
+                }
             } finally {
-                refreshButton.disabled = false;
-                isUpdating = false;
+                if (requestId === state.requestId) {
+                    elements.refreshButton.disabled = false;
+                }
             }
         }
 
-        updateAllLists();
-        setInterval(updateAllLists, 10000);
+        document.querySelectorAll('.direction-tab').forEach((tab) => {
+            tab.addEventListener('click', () => {
+                if (tab.dataset.direction === state.direction) {
+                    return;
+                }
+                state.direction = tab.dataset.direction;
+                document.querySelectorAll('.direction-tab').forEach((candidate) => {
+                    candidate.setAttribute('aria-selected', String(candidate === tab));
+                });
+                updateDirectionHeading();
+                loadBuses();
+            });
+        });
+
+        elements.refreshButton.addEventListener('click', loadBuses);
+        elements.retryButton.addEventListener('click', loadBuses);
+        loadBuses();
+        window.setInterval(loadBuses, 60000);
     </script>
 </body>
 </html>

@@ -1,0 +1,19 @@
+{
+  "name": "KIT通学バス",
+  "short_name": "KIT Bus",
+  "description": "金沢駅・中橋方面とKIT間の次のバスを確認できます。",
+  "lang": "ja",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f4f7f8",
+  "theme_color": "#006b5f",
+  "icons": [
+    {
+      "src": "/static/app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

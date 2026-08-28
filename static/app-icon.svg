@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="KIT Bus">
+  <rect width="512" height="512" rx="88" fill="#006b5f"/>
+  <rect x="96" y="116" width="320" height="236" rx="42" fill="#ffffff"/>
+  <rect x="132" y="154" width="248" height="84" rx="16" fill="#d9f0eb"/>
+  <path d="M150 282h212" stroke="#006b5f" stroke-width="28" stroke-linecap="round"/>
+  <circle cx="168" cy="370" r="34" fill="#ffffff"/>
+  <circle cx="344" cy="370" r="34" fill="#ffffff"/>
+  <path d="M212 406h88" stroke="#ffffff" stroke-width="22" stroke-linecap="round"/>
+</svg>
