@@ -10,7 +10,7 @@
 - `to_station`: KITから金沢駅
 - `to_nakahashi`: KITから中橋
 
-次発から最大3便、次発までの残り時間、系統、行き先、のりばを表示します。運行終了と通信エラーは専用表示に切り替わり、更新ボタンまたは1分ごとの自動取得で最新情報を確認できます。便の検索と残り時間の計算はAPI側で行い、ブラウザ側には同じ時刻表ロジックを持ちません。
+次発から最大3便、次発までの残り時間、系統、行き先、のりばを表示します。運行終了と通信エラーは専用表示に切り替わり、更新ボタンまたは画面表示中の1分ごとの自動取得で最新情報を確認できます。便の検索と残り時間の計算はAPI側で行い、ブラウザ側には同じ時刻表ロジックを持ちません。
 
 ## ローカル開発
 
@@ -46,9 +46,11 @@ python -m unittest discover -s tests -v
 
 ヘルスチェックは `GET /healthz` です。
 
+現在時刻と曜日はアプリ側で日本標準時（JST）として判定し、`/api/next_bus` は `Cache-Control: no-store` を返します。
+
 ## PWA
 
-`static/manifest.webmanifest` とiPhone向けmeta情報を設定し、ホーム画面からstandalone表示できる最小構成にしています。ライト・ダーク表示とsafe areaに対応しています。
+`static/manifest.webmanifest`、192×192・512×512のPNGアイコン、Apple touch icon、iPhone向けmeta情報を設定し、ホーム画面からstandalone表示できる最小構成にしています。ライト・ダーク表示とsafe areaに対応しています。
 
 Service Workerとオフラインキャッシュは現時点では使用しません。時刻情報の古いキャッシュを表示しないよう、API取得では `cache: no-store` を指定しています。
 

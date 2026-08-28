@@ -2,7 +2,7 @@ import os
 import re
 import sqlite3
 from contextlib import closing
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from flask import Flask, jsonify, render_template, request
@@ -39,6 +39,7 @@ DIRECTION_DETAILS = {
     },
 }
 LINE_NUMBER_PATTERN = re.compile(r"\((\d+)\)")
+JST = timezone(timedelta(hours=9), name="JST")
 
 
 def get_day_type(now):
@@ -67,6 +68,18 @@ def extract_line_number(line):
 
 def fetch_next_buses(direction, day_type, current_time):
     with closing(get_db_connection()) as conn:
+        schedule_exists = conn.execute(
+            """
+            SELECT 1
+            FROM bus_schedule
+            WHERE direction = ? AND day_type = ?
+            LIMIT 1
+            """,
+            (direction, day_type),
+        ).fetchone()
+        if schedule_exists is None:
+            return None
+
         rows = conn.execute(
             """
             SELECT time, line, stop
@@ -101,6 +114,13 @@ def healthz():
     return jsonify({"status": "ok"})
 
 
+@app.after_request
+def disable_next_bus_cache(response):
+    if request.path == "/api/next_bus":
+        response.headers["Cache-Control"] = "no-store"
+    return response
+
+
 @app.route("/api/next_bus")
 def api_next_bus():
     direction = request.args.get("dir", "to_uni")
@@ -111,7 +131,7 @@ def api_next_bus():
             "valid_directions": sorted(VALID_DIRECTIONS),
         }), 400
 
-    now = datetime.now()
+    now = datetime.now(JST)
     current_time = now.strftime("%H:%M")
     day_type = get_day_type(now)
 
@@ -123,6 +143,15 @@ def api_next_bus():
             "status": "error",
             "message": "Schedule data is currently unavailable.",
             "current_time": current_time,
+        }), 503
+
+    if next_buses is None:
+        return jsonify({
+            "status": "error",
+            "message": "Schedule data is currently unavailable.",
+            "current_time": current_time,
+            "day_type": day_type,
+            "direction": direction,
         }), 503
 
     if next_buses:
@@ -145,4 +174,8 @@ def api_next_bus():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    app.run(
+        debug=os.environ.get("FLASK_DEBUG") == "1",
+        host=os.environ.get("FLASK_RUN_HOST", "127.0.0.1"),
+        port=int(os.environ.get("PORT", "5000")),
+    )

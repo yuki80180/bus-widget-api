@@ -11,7 +11,7 @@
     <meta name="format-detection" content="telephone=no">
     <link rel="manifest" href="{{ url_for('static', filename='manifest.webmanifest') }}">
     <link rel="icon" href="{{ url_for('static', filename='app-icon.svg') }}" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="{{ url_for('static', filename='app-icon.svg') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='apple-touch-icon.png') }}">
     <title>KIT Bus</title>
     <style>
         :root {
@@ -144,7 +144,7 @@
             cursor: pointer;
         }
 
-        .direction-tab[aria-selected="true"] {
+        .direction-tab[aria-pressed="true"] {
             background: var(--surface);
             color: var(--accent-strong);
             box-shadow: 0 1px 4px rgba(19, 42, 48, 0.12);
@@ -416,10 +416,10 @@
             </button>
         </header>
 
-        <div class="direction-tabs" role="tablist" aria-label="行き先">
-            <button class="direction-tab" type="button" role="tab" aria-selected="true" data-direction="to_uni">KIT行き</button>
-            <button class="direction-tab" type="button" role="tab" aria-selected="false" data-direction="to_station">金沢駅行き</button>
-            <button class="direction-tab" type="button" role="tab" aria-selected="false" data-direction="to_nakahashi">中橋行き</button>
+        <div class="direction-tabs" role="group" aria-label="行き先">
+            <button class="direction-tab" type="button" aria-pressed="true" data-direction="to_uni">KIT行き</button>
+            <button class="direction-tab" type="button" aria-pressed="false" data-direction="to_station">金沢駅行き</button>
+            <button class="direction-tab" type="button" aria-pressed="false" data-direction="to_nakahashi">中橋行き</button>
         </div>
 
         <section aria-live="polite" aria-busy="true" id="bus-section">
@@ -485,7 +485,9 @@
 
         const state = {
             direction: 'to_uni',
-            requestId: 0
+            requestId: 0,
+            controller: null,
+            refreshIntervalId: null
         };
 
         const elements = {
@@ -590,7 +592,13 @@
         }
 
         async function loadBuses() {
+            if (state.controller) {
+                state.controller.abort();
+            }
+
             const requestId = ++state.requestId;
+            const controller = new AbortController();
+            state.controller = controller;
             setView('loading');
             elements.refreshButton.disabled = true;
             elements.status.textContent = 'バス情報を更新しています';
@@ -598,7 +606,8 @@
             try {
                 const response = await fetch(`/api/next_bus?dir=${encodeURIComponent(state.direction)}`, {
                     cache: 'no-store',
-                    headers: { Accept: 'application/json' }
+                    headers: { Accept: 'application/json' },
+                    signal: controller.signal
                 });
                 const data = await response.json();
 
@@ -620,14 +629,32 @@
                     throw new Error('Unexpected API response');
                 }
             } catch (error) {
+                if (error.name === 'AbortError') {
+                    return;
+                }
                 if (requestId === state.requestId) {
                     elements.status.textContent = 'バス情報を取得できませんでした';
                     setView('error');
                 }
             } finally {
                 if (requestId === state.requestId) {
+                    state.controller = null;
                     elements.refreshButton.disabled = false;
                 }
+            }
+        }
+
+        function stopAutoRefresh() {
+            if (state.refreshIntervalId !== null) {
+                window.clearInterval(state.refreshIntervalId);
+                state.refreshIntervalId = null;
+            }
+        }
+
+        function startAutoRefresh() {
+            stopAutoRefresh();
+            if (!document.hidden) {
+                state.refreshIntervalId = window.setInterval(loadBuses, 60000);
             }
         }
 
@@ -638,7 +665,7 @@
                 }
                 state.direction = tab.dataset.direction;
                 document.querySelectorAll('.direction-tab').forEach((candidate) => {
-                    candidate.setAttribute('aria-selected', String(candidate === tab));
+                    candidate.setAttribute('aria-pressed', String(candidate === tab));
                 });
                 updateDirectionHeading();
                 loadBuses();
@@ -647,8 +674,20 @@
 
         elements.refreshButton.addEventListener('click', loadBuses);
         elements.retryButton.addEventListener('click', loadBuses);
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                stopAutoRefresh();
+                if (state.controller) {
+                    state.controller.abort();
+                }
+                return;
+            }
+
+            loadBuses();
+            startAutoRefresh();
+        });
         loadBuses();
-        window.setInterval(loadBuses, 60000);
+        startAutoRefresh();
     </script>
 </body>
 </html>
