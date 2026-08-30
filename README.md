@@ -26,7 +26,7 @@ python app.py
 
 ブラウザで `http://127.0.0.1:5000/` を開きます。`init_db.py` は `schedule.json` から `bus.db` を再生成するため、時刻表を変更する意図がある場合にだけ実行してください。
 
-テストは追加パッケージなしで実行できます。
+依存関係をインストール後、テストは次のコマンドで実行できます。
 
 ```powershell
 python -m unittest discover -s tests -v
@@ -46,7 +46,7 @@ python -m unittest discover -s tests -v
 
 ヘルスチェックは `GET /healthz` です。
 
-現在時刻と曜日はアプリ側で日本標準時（JST）として判定し、`/api/next_bus` は `Cache-Control: no-store` を返します。
+現在時刻と日付はアプリ側で日本標準時（JST）として判定します。通常の月〜金は`weekday`、土日と日本の国民の祝日は`weekend`ダイヤを使用します。祝日判定には内閣府公表データに基づく`jpholiday`を使用し、`/api/next_bus` は`Cache-Control: no-store`を返します。
 
 ## PWA
 

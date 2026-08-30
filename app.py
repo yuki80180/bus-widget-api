@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from flask import Flask, jsonify, render_template, request
+from jpholiday import JPHoliday
 
 app = Flask(__name__)
 
@@ -40,10 +41,13 @@ DIRECTION_DETAILS = {
 }
 LINE_NUMBER_PATTERN = re.compile(r"\((\d+)\)")
 JST = timezone(timedelta(hours=9), name="JST")
+JAPAN_HOLIDAYS = JPHoliday()
 
 
-def get_day_type(now):
-    return "weekend" if now.weekday() >= 5 else "weekday"
+def get_service_day_type(service_date):
+    if service_date.weekday() >= 5 or JAPAN_HOLIDAYS.is_holiday(service_date):
+        return "weekend"
+    return "weekday"
 
 
 def get_db_connection():
@@ -133,7 +137,7 @@ def api_next_bus():
 
     now = datetime.now(JST)
     current_time = now.strftime("%H:%M")
-    day_type = get_day_type(now)
+    day_type = get_service_day_type(now.date())
 
     try:
         next_buses = fetch_next_buses(direction, day_type, current_time)

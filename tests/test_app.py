@@ -2,7 +2,7 @@ import sqlite3
 import tempfile
 import unittest
 from contextlib import closing
-from datetime import datetime
+from datetime import date, datetime, timezone
 from pathlib import Path
 from unittest.mock import patch
 
@@ -17,6 +17,40 @@ class FixedDateTime(datetime):
     def now(cls, tz=None):
         cls.requested_timezone = tz
         return cls(*cls.current, tzinfo=tz)
+
+
+class FixedUtcInstantDateTime(datetime):
+    current_utc = datetime(2026, 9, 23, 15, 5, tzinfo=timezone.utc)
+    requested_timezone = None
+
+    @classmethod
+    def now(cls, tz=None):
+        cls.requested_timezone = tz
+        if tz is None:
+            return cls.current_utc.replace(tzinfo=None)
+        return cls.current_utc.astimezone(tz)
+
+
+class ServiceDayTypeTestCase(unittest.TestCase):
+    def test_service_day_type_uses_weekends_and_japanese_holidays(self):
+        cases = [
+            ("ordinary Monday", date(2026, 8, 24), "weekday"),
+            ("ordinary Saturday", date(2026, 8, 29), "weekend"),
+            ("ordinary Sunday", date(2026, 8, 30), "weekend"),
+            ("Respect for the Aged Day", date(2026, 9, 21), "weekend"),
+            ("substitute holiday", date(2026, 5, 6), "weekend"),
+            ("citizen's holiday", date(2026, 9, 22), "weekend"),
+            ("Vernal Equinox Day", date(2026, 3, 20), "weekend"),
+            ("Autumnal Equinox Day", date(2026, 9, 23), "weekend"),
+            ("weekday after the holidays", date(2026, 9, 24), "weekday"),
+        ]
+
+        for label, service_date, expected in cases:
+            with self.subTest(label=label, service_date=service_date):
+                self.assertEqual(
+                    app_module.get_service_day_type(service_date),
+                    expected,
+                )
 
 
 class BusApiTestCase(unittest.TestCase):
@@ -163,6 +197,34 @@ class BusApiTestCase(unittest.TestCase):
         self.assertEqual(data["current_time"], "00:05")
         self.assertEqual(data["day_type"], "weekend")
         self.assertEqual(data["buses"][0]["minutes_until"], 5)
+
+    def test_weekday_holiday_uses_weekend_schedule(self):
+        FixedDateTime.current = (2026, 9, 21, 0, 5)
+
+        response = self.client.get("/api/next_bus?dir=to_uni")
+        data = response.get_json()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data["current_time"], "00:05")
+        self.assertEqual(data["day_type"], "weekend")
+        self.assertEqual(data["buses"][0]["time"], "00:10")
+        self.assertEqual(data["buses"][0]["minutes_until"], 5)
+
+    def test_utc_instant_uses_the_jst_service_date(self):
+        FixedUtcInstantDateTime.requested_timezone = None
+
+        with patch.object(app_module, "datetime", FixedUtcInstantDateTime):
+            response = self.client.get("/api/next_bus?dir=to_uni")
+        data = response.get_json()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            FixedUtcInstantDateTime.requested_timezone,
+            app_module.JST,
+        )
+        self.assertEqual(data["current_time"], "00:05")
+        self.assertEqual(data["day_type"], "weekday")
+        self.assertEqual(data["buses"][0]["time"], "07:31")
 
 
 if __name__ == "__main__":
