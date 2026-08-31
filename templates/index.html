@@ -206,6 +206,22 @@
             line-height: 1.6;
         }
 
+        .end-content {
+            width: 100%;
+            min-width: 0;
+        }
+
+        .end-message {
+            text-align: center;
+        }
+
+        .next-service-preview {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            text-align: left;
+        }
+
         .retry-button {
             min-height: 44px;
             margin-top: 20px;
@@ -456,9 +472,23 @@
             </div>
 
             <div id="end-state" class="panel message-panel" hidden>
-                <div>
-                    <p class="message-title">本日の運行は終了しました</p>
-                    <p class="message-text">次の運行日に、最新の時刻をご確認ください。</p>
+                <div class="end-content">
+                    <div class="end-message">
+                        <p class="message-title">本日の運行は終了しました</p>
+                        <p id="end-fallback" class="message-text">次の運行日に、最新の時刻をご確認ください。</p>
+                    </div>
+                    <div id="next-service-preview" class="next-service-preview" hidden>
+                        <p class="section-label">次のバス</p>
+                        <div class="departure-row">
+                            <p id="next-service-time" class="departure-time">--:--</p>
+                            <p id="next-service-date" class="remaining-time">--</p>
+                        </div>
+                        <div class="bus-details">
+                            <div id="next-service-line" class="line-number"></div>
+                            <div id="next-service-destination" class="destination"></div>
+                            <div id="next-service-stop" class="stop"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -528,6 +558,13 @@
             nextStop: document.getElementById('next-stop'),
             followingPanel: document.getElementById('following-panel'),
             followingList: document.getElementById('following-list'),
+            endFallback: document.getElementById('end-fallback'),
+            nextServicePreview: document.getElementById('next-service-preview'),
+            nextServiceDate: document.getElementById('next-service-date'),
+            nextServiceTime: document.getElementById('next-service-time'),
+            nextServiceLine: document.getElementById('next-service-line'),
+            nextServiceDestination: document.getElementById('next-service-destination'),
+            nextServiceStop: document.getElementById('next-service-stop'),
             updatedAt: document.getElementById('updated-at'),
             status: document.getElementById('screen-reader-status'),
             refreshButton: document.getElementById('refresh-button'),
@@ -562,6 +599,17 @@
                 return 'のりば情報なし';
             }
             return bus.stop ? `${bus.stop}のりば・${stopName}` : stopName;
+        }
+
+        function formatNextServiceDate(nextService) {
+            if (nextService.days_ahead === 1) {
+                return '明日';
+            }
+            const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(nextService.date || '');
+            if (!match) {
+                return '次回';
+            }
+            return `${Number(match[2])}/${Number(match[3])}`;
         }
 
         function updateDirectionHeading(detail) {
@@ -611,6 +659,28 @@
             setView('success');
         }
 
+        function renderEnd(data) {
+            elements.nextServicePreview.hidden = true;
+            elements.endFallback.hidden = false;
+
+            const nextService = data.next_service;
+            const nextBus = nextService?.bus;
+            if (nextService && nextBus && /^\d{2}:\d{2}$/.test(nextBus.time || '')) {
+                const dateLabel = formatNextServiceDate(nextService);
+                elements.nextServiceDate.textContent = dateLabel;
+                elements.nextServiceTime.textContent = nextBus.time;
+                elements.nextServiceLine.textContent = formatLine(nextBus);
+                elements.nextServiceDestination.textContent = data.direction_detail?.destination || '';
+                elements.nextServiceStop.textContent = formatStop(nextBus);
+                elements.endFallback.hidden = true;
+                elements.nextServicePreview.hidden = false;
+                elements.status.textContent = `本日の運行は終了しました。次のバスは${dateLabel}${nextBus.time}です`;
+            } else {
+                elements.status.textContent = '本日の運行は終了しました';
+            }
+            setView('end');
+        }
+
         function markUpdated() {
             const time = new Intl.DateTimeFormat('ja-JP', {
                 hour: '2-digit',
@@ -652,8 +722,7 @@
                 if (data.status === 'success' && Array.isArray(data.buses) && data.buses.length > 0) {
                     renderSuccess(data);
                 } else if (data.status === 'end') {
-                    elements.status.textContent = '本日の運行は終了しました';
-                    setView('end');
+                    renderEnd(data);
                 } else {
                     throw new Error('Unexpected API response');
                 }

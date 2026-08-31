@@ -42,6 +42,7 @@ DIRECTION_DETAILS = {
 LINE_NUMBER_PATTERN = re.compile(r"\((\d+)\)")
 JST = timezone(timedelta(hours=9), name="JST")
 JAPAN_HOLIDAYS = JPHoliday()
+NEXT_SERVICE_SEARCH_DAYS = 7
 
 
 def get_service_day_type(service_date):
@@ -70,6 +71,19 @@ def extract_line_number(line):
     return match.group(1) if match else None
 
 
+def serialize_bus(row, current_time=None):
+    bus = {
+        "time": row["time"],
+        "line": row["line"],
+        "line_number": extract_line_number(row["line"]),
+        "stop": row["stop"],
+        "stop_name": STOP_NAMES.get(row["stop"], row["stop"]),
+    }
+    if current_time is not None:
+        bus["minutes_until"] = minutes_until(row["time"], current_time)
+    return bus
+
+
 def fetch_next_buses(direction, day_type, current_time):
     with closing(get_db_connection()) as conn:
         schedule_exists = conn.execute(
@@ -95,17 +109,38 @@ def fetch_next_buses(direction, day_type, current_time):
             (direction, day_type, current_time),
         ).fetchall()
 
-    return [
-        {
-            "time": row["time"],
-            "line": row["line"],
-            "line_number": extract_line_number(row["line"]),
-            "stop": row["stop"],
-            "stop_name": STOP_NAMES.get(row["stop"], row["stop"]),
-            "minutes_until": minutes_until(row["time"], current_time),
-        }
-        for row in rows
-    ]
+    return [serialize_bus(row, current_time) for row in rows]
+
+
+def fetch_first_bus(direction, day_type):
+    with closing(get_db_connection()) as conn:
+        row = conn.execute(
+            """
+            SELECT time, line, stop
+            FROM bus_schedule
+            WHERE direction = ? AND day_type = ?
+            ORDER BY time ASC
+            LIMIT 1
+            """,
+            (direction, day_type),
+        ).fetchone()
+
+    return serialize_bus(row) if row is not None else None
+
+
+def find_next_service(direction, service_date, max_days=NEXT_SERVICE_SEARCH_DAYS):
+    for days_ahead in range(1, max_days + 1):
+        candidate_date = service_date + timedelta(days=days_ahead)
+        candidate_day_type = get_service_day_type(candidate_date)
+        first_bus = fetch_first_bus(direction, candidate_day_type)
+        if first_bus is not None:
+            return {
+                "date": candidate_date.isoformat(),
+                "day_type": candidate_day_type,
+                "days_ahead": days_ahead,
+                "bus": first_bus,
+            }
+    return None
 
 
 @app.route("/")
@@ -137,10 +172,14 @@ def api_next_bus():
 
     now = datetime.now(JST)
     current_time = now.strftime("%H:%M")
-    day_type = get_service_day_type(now.date())
+    service_date = now.date()
+    day_type = get_service_day_type(service_date)
 
     try:
         next_buses = fetch_next_buses(direction, day_type, current_time)
+        next_service = None
+        if next_buses == []:
+            next_service = find_next_service(direction, service_date)
     except (FileNotFoundError, sqlite3.Error):
         app.logger.exception("Failed to load bus schedule")
         return jsonify({
@@ -174,6 +213,7 @@ def api_next_bus():
         "day_type": day_type,
         "direction": direction,
         "direction_detail": DIRECTION_DETAILS[direction],
+        "next_service": next_service,
     })
 
 
