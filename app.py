@@ -128,6 +128,27 @@ def fetch_first_bus(direction, day_type):
     return serialize_bus(row) if row is not None else None
 
 
+def fetch_timetable(direction, day_type):
+    with closing(get_db_connection()) as conn:
+        schedule_exists = conn.execute(
+            "SELECT 1 FROM bus_schedule LIMIT 1"
+        ).fetchone()
+        if schedule_exists is None:
+            return None
+
+        rows = conn.execute(
+            """
+            SELECT time, line, stop
+            FROM bus_schedule
+            WHERE direction = ? AND day_type = ?
+            ORDER BY time ASC, id ASC
+            """,
+            (direction, day_type),
+        ).fetchall()
+
+    return [serialize_bus(row) for row in rows]
+
+
 def find_next_service(direction, service_date, max_days=NEXT_SERVICE_SEARCH_DAYS):
     for days_ahead in range(1, max_days + 1):
         candidate_date = service_date + timedelta(days=days_ahead)
@@ -154,10 +175,58 @@ def healthz():
 
 
 @app.after_request
-def disable_next_bus_cache(response):
-    if request.path == "/api/next_bus":
+def disable_schedule_api_cache(response):
+    if request.path in {"/api/next_bus", "/api/timetable"}:
         response.headers["Cache-Control"] = "no-store"
     return response
+
+
+@app.route("/api/timetable")
+def api_timetable():
+    direction = request.args.get("dir", "to_uni")
+    if direction not in VALID_DIRECTIONS:
+        return jsonify({
+            "status": "error",
+            "message": "Unknown direction.",
+            "valid_directions": sorted(VALID_DIRECTIONS),
+        }), 400
+
+    now = datetime.now(JST)
+    current_time = now.strftime("%H:%M")
+    service_date = now.date()
+    day_type = get_service_day_type(service_date)
+
+    try:
+        buses = fetch_timetable(direction, day_type)
+    except (FileNotFoundError, sqlite3.Error):
+        app.logger.exception("Failed to load bus timetable")
+        return jsonify({
+            "status": "error",
+            "code": "schedule_unavailable",
+            "message": "Schedule data is currently unavailable.",
+            "current_time": current_time,
+        }), 503
+
+    if buses is None:
+        return jsonify({
+            "status": "error",
+            "code": "schedule_empty",
+            "message": "Schedule data is currently unavailable.",
+            "current_time": current_time,
+            "date": service_date.isoformat(),
+            "day_type": day_type,
+            "direction": direction,
+        }), 503
+
+    return jsonify({
+        "status": "success",
+        "current_time": current_time,
+        "date": service_date.isoformat(),
+        "day_type": day_type,
+        "direction": direction,
+        "direction_detail": DIRECTION_DETAILS[direction],
+        "buses": buses,
+    })
 
 
 @app.route("/api/next_bus")

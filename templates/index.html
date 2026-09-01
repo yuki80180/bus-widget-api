@@ -351,6 +351,175 @@
             text-align: right;
         }
 
+        .timetable-disclosure {
+            margin-top: 22px;
+        }
+
+        .timetable-toggle {
+            display: flex;
+            width: 100%;
+            min-height: 48px;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0 16px;
+            background: transparent;
+            color: var(--text);
+            font-weight: 750;
+            cursor: pointer;
+        }
+
+        .timetable-toggle-mark {
+            color: var(--accent-strong);
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        .timetable-panel {
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .timetable-header {
+            display: flex;
+            min-width: 0;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 18px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .timetable-heading {
+            min-width: 0;
+        }
+
+        .timetable-title {
+            margin: 0;
+            font-size: 20px;
+            line-height: 1.3;
+        }
+
+        .timetable-meta {
+            margin: 5px 0 0;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        .timetable-close {
+            flex: 0 0 auto;
+            min-width: 58px;
+            min-height: 44px;
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            padding: 0 12px;
+            background: var(--surface-subtle);
+            color: var(--text);
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .timetable-message {
+            display: grid;
+            min-height: 160px;
+            place-items: center;
+            padding: 26px 20px;
+            text-align: center;
+        }
+
+        .timetable-content {
+            padding: 14px 0 0;
+        }
+
+        .timetable-summary {
+            margin: 0;
+            padding: 0 18px 13px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .timetable-list {
+            position: relative;
+            max-height: min(62vh, 560px);
+            margin: 0;
+            padding: 0;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            border-top: 1px solid var(--border);
+            list-style: none;
+        }
+
+        .timetable-list:focus-visible {
+            outline: 3px solid color-mix(in srgb, var(--focus) 60%, transparent);
+            outline-offset: -3px;
+        }
+
+        .timetable-item {
+            display: grid;
+            grid-template-columns: 72px minmax(0, 1fr);
+            min-width: 0;
+            gap: 12px;
+            padding: 14px 18px;
+            border-top: 1px solid var(--border);
+        }
+
+        .timetable-item:first-child {
+            border-top: 0;
+        }
+
+        .timetable-item.is-past .timetable-time,
+        .timetable-item.is-past .timetable-line {
+            color: var(--muted);
+        }
+
+        .timetable-item.is-next {
+            background: var(--accent-soft);
+            box-shadow: inset 4px 0 0 var(--accent);
+        }
+
+        .timetable-time {
+            font-size: 25px;
+            font-variant-numeric: tabular-nums;
+            font-weight: 780;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+
+        .timetable-details {
+            display: grid;
+            min-width: 0;
+            gap: 3px;
+            overflow-wrap: anywhere;
+        }
+
+        .timetable-next-label {
+            width: fit-content;
+            border-radius: 5px;
+            padding: 3px 6px;
+            background: var(--accent);
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        .timetable-line {
+            font-size: 14px;
+            font-weight: 750;
+            line-height: 1.4;
+        }
+
+        .timetable-destination,
+        .timetable-stop {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.45;
+        }
+
         .visually-hidden {
             position: absolute;
             width: 1px;
@@ -390,6 +559,25 @@
                 margin-top: -10px;
                 padding-bottom: 8px;
             }
+
+            .timetable-header {
+                padding: 16px 14px;
+            }
+
+            .timetable-item {
+                grid-template-columns: 64px minmax(0, 1fr);
+                gap: 9px;
+                padding: 13px 14px;
+            }
+
+            .timetable-time {
+                font-size: 23px;
+            }
+
+            .timetable-summary {
+                padding-right: 14px;
+                padding-left: 14px;
+            }
         }
 
         @media (prefers-color-scheme: dark) {
@@ -406,6 +594,10 @@
                 --focus: #57aeea;
                 --danger: #ff8d8d;
                 --shadow: none;
+            }
+
+            .timetable-next-label {
+                color: #102126;
             }
         }
 
@@ -503,6 +695,52 @@
             <p id="updated-at" class="updated-at" hidden>最終更新 --:--</p>
             <p id="screen-reader-status" class="visually-hidden" role="status"></p>
         </section>
+
+        <div class="timetable-disclosure">
+            <button id="timetable-toggle" class="timetable-toggle" type="button"
+                    aria-expanded="false" aria-controls="timetable-panel">
+                <span>今日の時刻表</span>
+                <span class="timetable-toggle-mark" aria-hidden="true">＋</span>
+            </button>
+
+            <section id="timetable-panel" class="panel timetable-panel"
+                     aria-labelledby="timetable-title" aria-busy="false" hidden>
+                <header class="timetable-header">
+                    <div class="timetable-heading">
+                        <h2 id="timetable-title" class="timetable-title">今日の時刻表</h2>
+                        <p id="timetable-meta" class="timetable-meta">時刻表を取得しています</p>
+                    </div>
+                    <button id="timetable-close" class="timetable-close" type="button">閉じる</button>
+                </header>
+
+                <div id="timetable-loading" class="timetable-message">
+                    <p class="message-text">今日の時刻表を取得しています</p>
+                </div>
+
+                <div id="timetable-error" class="timetable-message" hidden>
+                    <div>
+                        <p class="message-title">時刻表を取得できませんでした</p>
+                        <p class="message-text">通信状態を確認して、もう一度お試しください。</p>
+                        <button id="timetable-retry" class="retry-button" type="button">再読み込み</button>
+                    </div>
+                </div>
+
+                <div id="timetable-empty" class="timetable-message" hidden>
+                    <div>
+                        <p class="message-title">本日の時刻表はありません</p>
+                        <p class="message-text">選択中の方向には、本日の登録便がありません。</p>
+                    </div>
+                </div>
+
+                <div id="timetable-content" class="timetable-content" hidden>
+                    <p id="timetable-summary" class="timetable-summary"></p>
+                    <ol id="timetable-list" class="timetable-list" tabindex="0"
+                        aria-label="今日の全便"></ol>
+                </div>
+
+                <p id="timetable-status" class="visually-hidden" role="status"></p>
+            </section>
+        </div>
     </main>
 
     <script>
@@ -541,6 +779,12 @@
             refreshIntervalId: null
         };
 
+        const timetableState = {
+            open: false,
+            requestId: 0,
+            controller: null
+        };
+
         const directionTabs = Array.from(document.querySelectorAll('.direction-tab'));
 
         const elements = {
@@ -568,7 +812,20 @@
             updatedAt: document.getElementById('updated-at'),
             status: document.getElementById('screen-reader-status'),
             refreshButton: document.getElementById('refresh-button'),
-            retryButton: document.getElementById('retry-button')
+            retryButton: document.getElementById('retry-button'),
+            timetableToggle: document.getElementById('timetable-toggle'),
+            timetableToggleMark: document.querySelector('.timetable-toggle-mark'),
+            timetablePanel: document.getElementById('timetable-panel'),
+            timetableClose: document.getElementById('timetable-close'),
+            timetableMeta: document.getElementById('timetable-meta'),
+            timetableLoading: document.getElementById('timetable-loading'),
+            timetableError: document.getElementById('timetable-error'),
+            timetableEmpty: document.getElementById('timetable-empty'),
+            timetableContent: document.getElementById('timetable-content'),
+            timetableSummary: document.getElementById('timetable-summary'),
+            timetableList: document.getElementById('timetable-list'),
+            timetableRetry: document.getElementById('timetable-retry'),
+            timetableStatus: document.getElementById('timetable-status')
         };
 
         function setView(view) {
@@ -577,6 +834,14 @@
             elements.end.hidden = view !== 'end';
             elements.error.hidden = view !== 'error';
             elements.busSection.setAttribute('aria-busy', String(view === 'loading'));
+        }
+
+        function setTimetableView(view) {
+            elements.timetableLoading.hidden = view !== 'loading';
+            elements.timetableError.hidden = view !== 'error';
+            elements.timetableEmpty.hidden = view !== 'empty';
+            elements.timetableContent.hidden = view !== 'content';
+            elements.timetablePanel.setAttribute('aria-busy', String(view === 'loading'));
         }
 
         function formatRemaining(minutes) {
@@ -599,6 +864,18 @@
                 return 'のりば情報なし';
             }
             return bus.stop ? `${bus.stop}のりば・${stopName}` : stopName;
+        }
+
+        function formatTimetableDate(dateValue) {
+            const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateValue || '');
+            if (!match) {
+                return '今日';
+            }
+            return `${Number(match[1])}年${Number(match[2])}月${Number(match[3])}日`;
+        }
+
+        function formatDayType(dayType) {
+            return dayType === 'weekend' ? '土日祝ダイヤ' : '平日ダイヤ';
         }
 
         function formatNextServiceDate(nextService) {
@@ -679,6 +956,239 @@
                 elements.status.textContent = '本日の運行は終了しました';
             }
             setView('end');
+        }
+
+        function updateTimetableMeta(data) {
+            const fallback = directions[state.direction];
+            const detail = data?.direction_detail;
+            const from = detail?.from || fallback.from;
+            const to = detail?.to || fallback.to;
+
+            if (data?.date && data?.day_type) {
+                elements.timetableMeta.textContent =
+                    `${from} → ${to}・${formatTimetableDate(data.date)}・${formatDayType(data.day_type)}`;
+                return;
+            }
+            elements.timetableMeta.textContent = `${from} → ${to}・取得中`;
+        }
+
+        function createTimetableItem(bus, currentTime, nextTime, destination, markAsCurrent) {
+            const item = document.createElement('li');
+            const isPast = bus.time <= currentTime;
+            const isNext = nextTime !== null && bus.time === nextTime;
+            item.className = 'timetable-item';
+            if (isPast) {
+                item.classList.add('is-past');
+            }
+            if (isNext) {
+                item.classList.add('is-next');
+                if (markAsCurrent) {
+                    item.setAttribute('aria-current', 'true');
+                }
+            }
+
+            const time = document.createElement('time');
+            time.className = 'timetable-time';
+            time.dateTime = bus.time;
+            time.textContent = bus.time;
+
+            const details = document.createElement('div');
+            details.className = 'timetable-details';
+
+            if (isNext) {
+                const nextLabel = document.createElement('span');
+                nextLabel.className = 'timetable-next-label';
+                nextLabel.textContent = '次のバス';
+                details.append(nextLabel);
+            } else if (isPast) {
+                const pastLabel = document.createElement('span');
+                pastLabel.className = 'visually-hidden';
+                pastLabel.textContent = '出発済み';
+                details.append(pastLabel);
+            }
+
+            const line = document.createElement('span');
+            line.className = 'timetable-line';
+            line.textContent = bus.line || formatLine(bus);
+
+            const destinationText = document.createElement('span');
+            destinationText.className = 'timetable-destination';
+            destinationText.textContent = destination || '行き先情報なし';
+
+            const stop = document.createElement('span');
+            stop.className = 'timetable-stop';
+            stop.textContent = formatStop(bus);
+
+            details.append(line, destinationText, stop);
+            item.append(time, details);
+            return item;
+        }
+
+        function scrollTimetableToNext(requestId) {
+            window.requestAnimationFrame(() => {
+                if (!timetableState.open || requestId !== timetableState.requestId) {
+                    return;
+                }
+                const nextItem = elements.timetableList.querySelector('.is-next');
+                if (!nextItem) {
+                    elements.timetableList.scrollTop = 0;
+                    return;
+                }
+                const targetTop = nextItem.offsetTop - (elements.timetableList.clientHeight / 3);
+                elements.timetableList.scrollTop = Math.max(0, targetTop);
+            });
+        }
+
+        function handleTimetableListKeydown(event) {
+            const list = event.currentTarget;
+            const pageStep = Math.max(80, list.clientHeight * 0.85);
+            const maxScroll = Math.max(0, list.scrollHeight - list.clientHeight);
+            const targets = {
+                ArrowDown: list.scrollTop + 48,
+                ArrowUp: list.scrollTop - 48,
+                PageDown: list.scrollTop + pageStep,
+                PageUp: list.scrollTop - pageStep,
+                Home: 0,
+                End: maxScroll
+            };
+            if (!Object.prototype.hasOwnProperty.call(targets, event.key)) {
+                return;
+            }
+            event.preventDefault();
+            list.scrollTop = Math.min(maxScroll, Math.max(0, targets[event.key]));
+        }
+
+        function isValidTimetableData(data, requestedDirection) {
+            return data?.status === 'success'
+                && data.direction === requestedDirection
+                && /^\d{2}:\d{2}$/.test(data.current_time || '')
+                && /^\d{4}-\d{2}-\d{2}$/.test(data.date || '')
+                && (data.day_type === 'weekday' || data.day_type === 'weekend')
+                && data.direction_detail
+                && Array.isArray(data.buses)
+                && data.buses.every((bus) => /^\d{2}:\d{2}$/.test(bus?.time || ''));
+        }
+
+        function renderTimetable(data, requestId) {
+            updateTimetableMeta(data);
+            elements.timetableList.scrollTop = 0;
+            elements.timetableList.replaceChildren();
+
+            if (data.buses.length === 0) {
+                elements.timetableStatus.textContent = '選択中の方向には、本日の登録便がありません';
+                setTimetableView('empty');
+                return;
+            }
+
+            const nextBus = data.buses.find((bus) => bus.time > data.current_time);
+            const nextTime = nextBus?.time || null;
+            const nextIndex = nextTime === null
+                ? -1
+                : data.buses.findIndex((bus) => bus.time === nextTime);
+            const destination = data.direction_detail.destination || '';
+            const items = data.buses.map((bus, index) =>
+                createTimetableItem(
+                    bus,
+                    data.current_time,
+                    nextTime,
+                    destination,
+                    index === nextIndex));
+            elements.timetableList.replaceChildren(...items);
+
+            if (nextTime) {
+                elements.timetableSummary.textContent =
+                    `次のバスは${nextTime}です。今日の全${data.buses.length}便を時刻順に表示しています。`;
+                elements.timetableStatus.textContent =
+                    `今日の時刻表を表示しました。次のバスは${nextTime}です`;
+            } else {
+                elements.timetableSummary.textContent =
+                    `本日の運行は終了しました。今日の全${data.buses.length}便を表示しています。`;
+                elements.timetableStatus.textContent =
+                    '本日の運行は終了しました。今日の時刻表を表示しています';
+            }
+
+            setTimetableView('content');
+            scrollTimetableToNext(requestId);
+        }
+
+        async function loadTimetable() {
+            if (!timetableState.open) {
+                return;
+            }
+            if (timetableState.controller) {
+                timetableState.controller.abort();
+            }
+
+            const requestedDirection = state.direction;
+            const requestId = ++timetableState.requestId;
+            const controller = new AbortController();
+            timetableState.controller = controller;
+            elements.timetableList.replaceChildren();
+            elements.timetableSummary.textContent = '';
+            updateTimetableMeta();
+            setTimetableView('loading');
+            elements.timetableStatus.textContent = '今日の時刻表を更新しています';
+
+            try {
+                const response = await fetch(`/api/timetable?dir=${encodeURIComponent(requestedDirection)}`, {
+                    cache: 'no-store',
+                    headers: { Accept: 'application/json' },
+                    signal: controller.signal
+                });
+                const data = await response.json();
+
+                if (requestId !== timetableState.requestId
+                        || !timetableState.open
+                        || requestedDirection !== state.direction) {
+                    return;
+                }
+                if (!response.ok || !isValidTimetableData(data, requestedDirection)) {
+                    throw new Error('Timetable API response error');
+                }
+                renderTimetable(data, requestId);
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    return;
+                }
+                if (requestId === timetableState.requestId && timetableState.open) {
+                    elements.timetableStatus.textContent = '今日の時刻表を取得できませんでした';
+                    setTimetableView('error');
+                }
+            } finally {
+                if (requestId === timetableState.requestId) {
+                    timetableState.controller = null;
+                }
+            }
+        }
+
+        function openTimetable() {
+            if (timetableState.open) {
+                return;
+            }
+            timetableState.open = true;
+            elements.timetablePanel.hidden = false;
+            elements.timetableToggle.setAttribute('aria-expanded', 'true');
+            elements.timetableToggleMark.textContent = '−';
+            loadTimetable();
+        }
+
+        function closeTimetable(restoreFocus = true) {
+            if (!timetableState.open) {
+                return;
+            }
+            timetableState.open = false;
+            timetableState.requestId += 1;
+            if (timetableState.controller) {
+                timetableState.controller.abort();
+                timetableState.controller = null;
+            }
+            elements.timetablePanel.hidden = true;
+            elements.timetableToggle.setAttribute('aria-expanded', 'false');
+            elements.timetableToggleMark.textContent = '＋';
+            elements.timetableList.replaceChildren();
+            if (restoreFocus) {
+                elements.timetableToggle.focus({ preventScroll: true });
+            }
         }
 
         function markUpdated() {
@@ -768,21 +1278,48 @@
                 saveDirection(direction);
                 updateDirectionHeading();
                 loadBuses();
+                if (timetableState.open) {
+                    loadTimetable();
+                }
             });
         });
 
         elements.refreshButton.addEventListener('click', loadBuses);
         elements.retryButton.addEventListener('click', loadBuses);
+        elements.timetableToggle.addEventListener('click', () => {
+            if (timetableState.open) {
+                closeTimetable();
+            } else {
+                openTimetable();
+            }
+        });
+        elements.timetableClose.addEventListener('click', () => closeTimetable());
+        elements.timetableRetry.addEventListener('click', loadTimetable);
+        elements.timetableList.addEventListener('keydown', handleTimetableListKeydown);
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && timetableState.open) {
+                event.preventDefault();
+                closeTimetable();
+            }
+        });
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
                 stopAutoRefresh();
                 if (state.controller) {
                     state.controller.abort();
                 }
+                if (timetableState.controller) {
+                    timetableState.controller.abort();
+                    timetableState.controller = null;
+                    timetableState.requestId += 1;
+                }
                 return;
             }
 
             loadBuses();
+            if (timetableState.open) {
+                loadTimetable();
+            }
             startAutoRefresh();
         });
         updateDirectionSelection();

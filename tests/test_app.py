@@ -116,6 +116,35 @@ class BusApiTestCase(unittest.TestCase):
         )
         self.assertNotIn("minutes_until", next_service["bus"])
 
+    def assert_timetable_metadata(
+            self,
+            data,
+            expected_direction,
+            expected_date,
+            expected_day_type,
+            expected_current_time):
+        self.assertEqual(
+            set(data),
+            {
+                "status",
+                "date",
+                "current_time",
+                "day_type",
+                "direction",
+                "direction_detail",
+                "buses",
+            },
+        )
+        self.assertEqual(data["status"], "success")
+        self.assertEqual(data["date"], expected_date)
+        self.assertEqual(data["current_time"], expected_current_time)
+        self.assertEqual(data["day_type"], expected_day_type)
+        self.assertEqual(data["direction"], expected_direction)
+        self.assertEqual(
+            data["direction_detail"],
+            app_module.DIRECTION_DETAILS[expected_direction],
+        )
+
     def tearDown(self):
         self.datetime_patch.stop()
         self.db_patch.stop()
@@ -137,6 +166,10 @@ class BusApiTestCase(unittest.TestCase):
             self.assertIn("KIT Bus", page_html)
             self.assertIn("manifest.webmanifest", page_html)
             self.assertIn("apple-touch-icon.png", page_html)
+            self.assertIn('id="timetable-toggle"', page_html)
+            self.assertIn('id="timetable-panel"', page_html)
+            self.assertIn('id="timetable-close"', page_html)
+            self.assertIn('id="timetable-list"', page_html)
             self.assertEqual(manifest_response.status_code, 200)
             manifest = manifest_response.get_json()
             self.assertEqual(manifest["display"], "standalone")
@@ -177,6 +210,182 @@ class BusApiTestCase(unittest.TestCase):
         self.assertNotIn("next_service", data)
         next_service_mock.assert_not_called()
         self.assertEqual(response.headers["Cache-Control"], "no-store")
+
+    def test_timetable_returns_full_weekday_schedule_in_stable_order(self):
+        with closing(sqlite3.connect(self.db_path)) as conn:
+            conn.executemany(
+                """
+                INSERT INTO bus_schedule (direction, day_type, time, line, stop)
+                VALUES (?, ?, ?, ?, ?)
+                """,
+                [
+                    ("to_uni", "weekday", "05:30", "早朝線 (10)", "C"),
+                    ("to_uni", "weekday", "07:42", "同時刻先発 (40)", "B"),
+                    ("to_uni", "weekday", "07:42", "同時刻後発 (41)", "D"),
+                ],
+            )
+            conn.commit()
+
+        response = self.client.get("/api/timetable?dir=to_uni")
+        data = response.get_json()
+
+        self.assertEqual(response.status_code, 200)
+        self.assert_timetable_metadata(
+            data,
+            "to_uni",
+            "2026-08-24",
+            "weekday",
+            "07:30",
+        )
+        self.assertEqual(
+            [bus["time"] for bus in data["buses"]],
+            ["05:30", "07:31", "07:42", "07:42", "07:42", "08:00", "09:00"],
+        )
+        self.assertEqual(
+            [bus["line"] for bus in data["buses"][2:5]],
+            ["錦町B線 (32)", "同時刻先発 (40)", "同時刻後発 (41)"],
+        )
+        for bus in data["buses"]:
+            self.assertEqual(
+                set(bus),
+                {"time", "line", "line_number", "stop", "stop_name"},
+            )
+            self.assertNotIn("minutes_until", bus)
+        self.assertEqual(data["buses"][0]["line_number"], "10")
+        self.assertEqual(data["buses"][0]["stop_name"], "四十万方向")
+        self.assertEqual(response.headers["Cache-Control"], "no-store")
+
+    def test_timetable_returns_the_weekend_schedule(self):
+        FixedDateTime.current = (2026, 8, 30, 0, 5)
+
+        response = self.client.get("/api/timetable?dir=to_station")
+        data = response.get_json()
+
+        self.assertEqual(response.status_code, 200)
+        self.assert_timetable_metadata(
+            data,
+            "to_station",
+            "2026-08-30",
+            "weekend",
+            "00:05",
+        )
+        self.assertEqual([bus["time"] for bus in data["buses"]], ["07:15"])
+
+    def test_timetable_weekday_holiday_uses_weekend_schedule(self):
+        FixedDateTime.current = (2026, 9, 21, 0, 5)
+
+        response = self.client.get("/api/timetable?dir=to_uni")
+        data = response.get_json()
+
+        self.assertEqual(response.status_code, 200)
+        self.assert_timetable_metadata(
+            data,
+            "to_uni",
+            "2026-09-21",
+            "weekend",
+            "00:05",
+        )
+        self.assertEqual([bus["time"] for bus in data["buses"]], ["00:10"])
+
+    def test_timetable_supports_all_directions(self):
+        expected_times = {
+            "to_uni": ["07:31", "07:42", "08:00", "09:00"],
+            "to_station": ["06:00"],
+            "to_nakahashi": ["07:35"],
+        }
+
+        for direction, times in expected_times.items():
+            with self.subTest(direction=direction):
+                response = self.client.get(f"/api/timetable?dir={direction}")
+                data = response.get_json()
+
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(data["direction"], direction)
+                self.assertEqual(
+                    [bus["time"] for bus in data["buses"]],
+                    times,
+                )
+
+    def test_timetable_invalid_direction_is_rejected(self):
+        response = self.client.get("/api/timetable?dir=unknown")
+        data = response.get_json()
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(data["status"], "error")
+        self.assertEqual(
+            data["valid_directions"],
+            ["to_nakahashi", "to_station", "to_uni"],
+        )
+        self.assertEqual(response.headers["Cache-Control"], "no-store")
+
+    def test_timetable_empty_database_is_an_api_error(self):
+        with closing(sqlite3.connect(self.db_path)) as conn:
+            conn.execute("DELETE FROM bus_schedule")
+            conn.commit()
+
+        response = self.client.get("/api/timetable?dir=to_uni")
+        data = response.get_json()
+
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(data["status"], "error")
+        self.assertEqual(data["code"], "schedule_empty")
+        self.assertEqual(response.headers["Cache-Control"], "no-store")
+
+    def test_timetable_selected_schedule_can_be_empty(self):
+        with closing(sqlite3.connect(self.db_path)) as conn:
+            conn.execute(
+                "DELETE FROM bus_schedule WHERE direction = ? AND day_type = ?",
+                ("to_station", "weekend"),
+            )
+            conn.commit()
+        FixedDateTime.current = (2026, 8, 30, 8, 0)
+
+        response = self.client.get("/api/timetable?dir=to_station")
+        data = response.get_json()
+
+        self.assertEqual(response.status_code, 200)
+        self.assert_timetable_metadata(
+            data,
+            "to_station",
+            "2026-08-30",
+            "weekend",
+            "08:00",
+        )
+        self.assertEqual(data["buses"], [])
+        self.assertEqual(response.headers["Cache-Control"], "no-store")
+
+    def test_timetable_database_error_returns_503(self):
+        with patch.object(
+                app_module,
+                "get_db_connection",
+                side_effect=sqlite3.OperationalError("database error")):
+            response = self.client.get("/api/timetable?dir=to_uni")
+        data = response.get_json()
+
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(data["status"], "error")
+        self.assertEqual(data["code"], "schedule_unavailable")
+        self.assertEqual(response.headers["Cache-Control"], "no-store")
+
+    def test_timetable_uses_the_jst_date_and_time(self):
+        FixedUtcInstantDateTime.requested_timezone = None
+
+        with patch.object(app_module, "datetime", FixedUtcInstantDateTime):
+            response = self.client.get("/api/timetable?dir=to_uni")
+        data = response.get_json()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            FixedUtcInstantDateTime.requested_timezone,
+            app_module.JST,
+        )
+        self.assert_timetable_metadata(
+            data,
+            "to_uni",
+            "2026-09-24",
+            "weekday",
+            "00:05",
+        )
 
     def test_end_of_service_response_contains_direction_details(self):
         response = self.client.get("/api/next_bus?dir=to_station")
