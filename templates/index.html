@@ -844,11 +844,19 @@
             elements.timetablePanel.setAttribute('aria-busy', String(view === 'loading'));
         }
 
-        function formatRemaining(minutes) {
+        function formatMinutesUntil(minutes) {
             if (!Number.isInteger(minutes) || minutes <= 1) {
                 return 'まもなく';
             }
-            return `あと${minutes}分`;
+            if (minutes < 60) {
+                return `あと${minutes}分`;
+            }
+
+            const hours = Math.floor(minutes / 60);
+            const remainingMinutes = minutes % 60;
+            return remainingMinutes === 0
+                ? `あと${hours}時間`
+                : `あと${hours}時間${remainingMinutes}分`;
         }
 
         function formatLine(bus) {
@@ -915,7 +923,7 @@
 
             const remaining = document.createElement('span');
             remaining.className = 'following-remaining';
-            remaining.textContent = formatRemaining(bus.minutes_until);
+            remaining.textContent = formatMinutesUntil(bus.minutes_until);
 
             item.append(time, line, remaining);
             return item;
@@ -925,7 +933,7 @@
             const [nextBus, ...followingBuses] = data.buses;
             updateDirectionHeading(data.direction_detail);
             elements.nextTime.textContent = nextBus.time || '--:--';
-            elements.nextRemaining.textContent = formatRemaining(nextBus.minutes_until);
+            elements.nextRemaining.textContent = formatMinutesUntil(nextBus.minutes_until);
             elements.nextLine.textContent = formatLine(nextBus);
             elements.nextDestination.textContent = data.direction_detail?.destination || '';
             elements.nextStop.textContent = formatStop(nextBus);
