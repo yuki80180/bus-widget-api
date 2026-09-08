@@ -100,7 +100,7 @@ function errorMessage(error) {
 }
 
 function refreshUrl() {
-  return "scriptable:///run?scriptName=" + encodeURIComponent(Script.name());
+  return "scriptable:///run?scriptName=" + encodeURIComponent(Script.name()) + "&action=refresh";
 }
 
 function apiUrl() {
@@ -247,13 +247,14 @@ async function createWidget(family) {
   return widget;
 }
 
+const isRefreshRun = config.runsInApp && (args.queryParameters || {}).action === "refresh";
 const family = widgetFamily();
 const widget = await createWidget(family);
-if (config.runsInApp) {
+if (config.runsInApp && !isRefreshRun) {
   if (family === "small") await widget.presentSmall();
   else if (family === "large") await widget.presentLarge();
   else await widget.presentMedium();
-  App.close();
 }
 Script.setWidget(widget);
 Script.complete();
+if (isRefreshRun) App.close();
