@@ -359,6 +359,165 @@ User-Agent: DiscordBot (https://github.com/yuki80180/bus-widget-api, 1.0)
 
 `removed` の確認済み候補は、`type` を `removed` にし、`key.time`、`key.line_normalized`、`key.stop` で記録します。
 
+## schedule更新案（update proposal）
+
+`monitor/generate_update_proposals.py` は、route search比較で見つかった差分を、将来 `schedule.json` へ反映する場合の機械可読な更新案へ変換するdry-run専用runnerです。更新案を作って人間が確認できるところまでを責務とし、適用処理は持ちません。
+
+このrunnerは保存済みの以下3ファイルだけを読みます。
+
+- `monitor/debug/route_search_compare.json`: route search比較結果
+- `schedule.json`: 更新案の現在値と整合性確認の根拠
+- `monitor/route_search_reviewed_candidates.json`: 既存の人間レビュー情報
+
+外部サイトへ再アクセスせず、`schedule.json`、`bus.db`、本番APIデータを変更しません。既定の出力先は `monitor/generated/update_proposals.json` です。`monitor/generated/` は実行ごとの生成物であり、Git管理対象ではありません。
+
+### 生成方法
+
+既に保存されている比較結果から生成する場合は、プロジェクトルートで次を実行します。
+
+```bash
+python monitor/generate_update_proposals.py
+```
+
+入力・出力を明示することもできます。`--output` は `monitor/generated/` 配下のJSONに限定されます。入力ファイルとの同一パス・symlink/junction・hardlinkによる別名指定も検査し、`schedule.json` や `bus.db` を出力先に指定しても拒否します。レポートは一時的なJSONファイルを経て置換し、書き込み用一時ファイルは終了時に削除します。
+
+```bash
+python monitor/generate_update_proposals.py \
+  --comparison monitor/debug/route_search_compare.json \
+  --schedule schedule.json \
+  --reviewed monitor/route_search_reviewed_candidates.json \
+  --output monitor/generated/update_proposals.json
+```
+
+Windowsで `python` がPATHにない場合は `./.venv/Scripts/python.exe monitor/generate_update_proposals.py` を使用できます。終了コードは正常生成 `0`、入力・出力エラー `1`、simulation失敗 `2` です。候補単位のvalidation errorはJSONに隔離して正常生成を継続します。
+
+実行時は各更新案、更新案にできなかったvalidation error、最後に `Update Proposal Summary` をターミナルへ表示します。ターミナルのSummaryではstatus別・変更種別の件数、validation error数、simulation結果を確認できます。出力JSONの `summary` には、さらに入力候補数、重複抑制数、時刻変更と重複した生差分の抑制数も記録します。
+
+### JSON出力
+
+出力の主なフィールドは以下です。
+
+- `proposal_version`: 更新案形式のバージョン
+- `generated_at`: 更新案を生成したUTC日時
+- `source`: 読み込んだ比較JSONのパス
+- `apply_allowed`: 常に `false`
+- `status_values`: 利用可能なstatusの一覧
+- `proposals`: 安全に具体化できた更新案
+- `validation_errors`: 不正または曖昧で更新案にできなかった候補
+- `simulation`: メモリ上の仮適用結果と適用前後の便数
+- `summary`: status別・変更種別などの集計
+
+各proposalは、安定した `proposal_id`、`direction`、`day_type`、`change_type`、元の比較カテゴリを示す `source_category`、`status`、元比較ファイルを示す `source`、既存レビューのsnapshot、`changes` を持ちます。`changes` のoperationは、追加が `add`、削除が `remove`、時刻変更が `replace` です。`before` は必ず現在の `schedule.json` を根拠にし、`after` は候補から安全に確定できた値だけを使用します。
+
+時刻変更には `time_context`（符号付き変更分数、同じ系統・乗り場の直前便・直後便、既存発車時刻をまたぐか）も付けます。追加確認が必要な場合は `review_reasons` に理由を記録します。
+
+```json
+{
+  "proposal_version": 1,
+  "generated_at": "2026-09-04T00:00:00Z",
+  "source": "monitor/debug/route_search_compare.json",
+  "apply_allowed": false,
+  "status_values": ["pending", "needs_review", "approved", "rejected"],
+  "proposals": [
+    {
+      "proposal_id": "<SHA-256>",
+      "direction": "to_uni",
+      "day_type": "weekday",
+      "change_type": "time_change",
+      "source_category": "time_change_candidates",
+      "status": "pending",
+      "source": "monitor/debug/route_search_compare.json",
+      "review": {
+        "matched": true,
+        "candidate_status": "confirmed"
+      },
+      "changes": [
+        {
+          "operation": "replace",
+          "before": {
+            "time": "19:36",
+            "line": "(33) 寺地・四十万行",
+            "stop": "C"
+          },
+          "after": {
+            "time": "19:46",
+            "line": "(33) 寺地・四十万行",
+            "stop": "C"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+### 差分カテゴリの扱い
+
+ここでのA/B/Cは更新案へ変換できる確実性の分類であり、承認状態ではありません。
+
+- A — `removed`: 対象便が現在の `schedule.json` に完全一致で1件だけ存在する場合、削除案へ機械的に変換できる
+- B — `added`: 系統の完全表記が得られるか、現在のscheduleから系統番号・乗り場に対応する完全表記を一意に解決できる場合だけ追加案にする。解決不能または複数候補なら人間確認が必要で、更新案にはしない
+- B — `time_change_candidates`: 同じdirection・day type・系統・乗り場であり、旧便と新便の対応、時刻、現在値を検証できる場合だけ `replace` 案にする。組み合わせ自体が推定を含むため、自動承認しない
+- C — `line_only`: 現在の比較データだけでは置換対象と新しい完全な系統表記を安全に確定できないため、現段階では更新案を生成せずvalidation errorとして残す
+
+`time_change_candidates` は同じ旧便・新便をそれぞれ `removed` と `added` にも含む補助カテゴリです。有効な時刻変更案を生成した場合、その構成要素は独立した追加案・削除案から除外し、同じ変更を二重生成しません。完全に同じproposal IDも1件にまとめますが、似ているだけの候補は統合しません。
+
+同じ旧便・新便を複数の異なる組み合わせが共有する場合は、先頭候補を選ばず全候補をvalidation errorへ隔離します。不正な時刻変更の構成要素を独立したadd/removeへ戻すこともしません。`blocked_components_suppressed` に抑制数を記録し、関連する生候補もvalidation errorへ残します。同じ便に対して競合する別proposalも隔離します。
+
+今回の入力対象はroute search比較JSONのみです。通常monitorの `update_candidates.json` の追加・削除は将来の入力adapterの対象とし、通常monitorの `line_differences` と `investigation_only`、旧調査用 `route_search_diff.json` は受け付けません。既存の取得元差異・除外系統の扱いをこのrunnerから変更しないためです。
+
+### statusと既存レビューの関係
+
+- `pending`: 対応する既存候補が `confirmed` で、更新案としてのvalidationにも成功した状態。変更承認済みという意味ではない
+- `needs_review`: 対応する `confirmed` レビューがない、時刻移動で既存発車時刻をまたぐ、またはsimulationが失敗して追加確認が必要な状態
+- `approved`: 将来、人間が更新案そのものを承認するフローのための予約状態
+- `rejected`: 将来、人間が更新案そのものを却下するフローのための予約状態
+
+generatorが `approved` や `rejected` を自動設定することはありません。既存reviewの `confirmed` は「候補を情報源で確認済み」という意味であり、schedule変更の承認ではありません。レビュー情報の正本は引き続き `monitor/route_search_reviewed_candidates.json` で、出力JSONの `review` は生成時点のsnapshotです。
+
+reviewファイルがなければ全候補を未確認として扱います。同じreview keyに矛盾する複数エントリがある場合は入力エラーにします。生成JSONを手編集しても、再生成時に承認状態として読み戻す処理はありません。
+
+### proposal IDと決定性
+
+`proposal_id` は、proposal version、direction、day type、change type、`changes` からcanonical JSONを作り、そのUTF-8バイト列にSHA-256を計算して生成します。`generated_at`、status、レビュー情報、入力ファイルのパスはIDに含めません。このため、同じ更新内容からは実行プロセスに依存しない同じIDが生成されます。
+
+proposal、validation error、Summaryの対象は安定した規則で並べ替えます。`generated_at` を除き、同じ入力から生成されるID、変更内容、配列順は同じです。
+
+### validationとsimulation
+
+更新案を出力する前に、少なくとも次を検証します。
+
+- directionとday typeが現在の `schedule.json` に存在する
+- day type、時刻、系統番号、乗り場が既知の形式・値である
+- 削除対象と時刻変更の現在値が `schedule.json` に完全一致で1件存在する
+- 追加先や時刻変更後の便が既に `schedule.json` に存在しない
+- 時刻変更の旧便・新便で系統と乗り場が一致し、元の `removed` / `added` にも対応要素がある
+- 時刻変更の構成要素は完全なlineを含め一致し、変更幅が既存比較処理と同じ60分以内、差分分数が正しい整数である
+- 入力に明示されたroute/direction/day typeが外側の比較対象と矛盾しない
+- 追加便の完全な系統表記を安全に確定できる
+
+失敗した候補は `proposals` に混ぜず、安定した `validation_id`、`status: needs_review`、理由codeを `validation_errors` に記録します。これらは `summary.total` や `summary.by_status.needs_review` には含めず、`summary.validation_error_count` で別集計します。
+
+生成したproposalは `schedule.json` のdeep copyへメモリ上で仮適用し、JSON化、時刻・系統・乗り場、完全重複、対象direction/day type、適用前後の便数を確認します。simulationの `status` は `passed` または `failed` です。この処理でも実ファイルや一時ファイルへscheduleを書き込みません。
+
+仮適用前のschedule全体も検証するため、不正な元便を削除して入力不正を隠すことはできません。失敗した1変更はメモリ上でも取り消します。simulationが成功しても、未生成候補を含む全差分への対応完了やデータの鮮度を意味しません。
+
+### テスト
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+proposalテストは外部サイトや `monitor/debug/` のローカル実データに依存せず、合成データと一時ディレクトリで実行します。既存APIテストも同じコマンドで実行できます。
+
+### sourceの鮮度
+
+`generated_at` は更新案を生成した時刻であり、route searchデータを取得した時刻ではありません。generatorは保存済みの `monitor/debug/route_search_compare.json` を再利用するため、その元になったHTMLや比較結果が最新であることを単独では保証できません。また、比較元HTMLの取得日時は比較JSONに含まれず、`monitor/debug/` に古いページファイルが残っている場合は抽出結果へ混在する可能性があります。最新情報が必要な場合は、保存ファイルの内容も確認し、先にroute search取得・比較パイプラインを実行し直してから生成してください。
+
+### 将来の承認・適用フロー
+
+このJSONは、将来の明示的な承認・適用フローへ渡せる更新案です。現在はproposal生成とsimulationまでで、apply用runner、schedule書き換え、DB再生成、commit、PR、Issue・Discord経由の承認処理はありません。statusにかかわらず `apply_allowed` は常に `false` で、`schedule.json` と `bus.db` は変更されません。
+
 ## to_uni の扱い
 
 `to_uni` は通常の停留所時刻表監視では更新候補確認対象に含めず、調査対象として扱います。現在は route search調査パイプラインと `monitor/route_search_reviewed_candidates.json` によって、確認済み候補を表示上区別しながら継続確認します。

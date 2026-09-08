@@ -7,3 +7,4 @@ venv/
 code-change-status.html
 monitor/debug/
 monitor/route_search_diff.json
+monitor/generated/
