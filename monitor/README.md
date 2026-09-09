@@ -516,7 +516,62 @@ proposalテストは外部サイトや `monitor/debug/` のローカル実デー
 
 ### 将来の承認・適用フロー
 
-このJSONは、将来の明示的な承認・適用フローへ渡せる更新案です。現在はproposal生成とsimulationまでで、apply用runner、schedule書き換え、DB再生成、commit、PR、Issue・Discord経由の承認処理はありません。statusにかかわらず `apply_allowed` は常に `false` で、`schedule.json` と `bus.db` は変更されません。
+このJSONは、将来の明示的な承認・適用フローへ渡せる更新案です。現在はproposal生成、simulation、以下の明示選択previewまでで、apply用runner、schedule書き換え、DB再生成、commit、PR、Issue・Discord経由の承認処理はありません。statusにかかわらず `apply_allowed` は常に `false` で、`schedule.json` と `bus.db` は変更されません。
+
+## 選択したproposalのpreview
+
+`monitor/preview_update_proposals.py` は、生成済みproposal JSONから人間がIDで明示選択した候補だけを、現在のscheduleのメモリ上のコピーへ仮適用します。実際の変更内容を確認する機能です。実 `schedule.json`、`bus.db`、proposal JSON、レビュー情報には書き込みません。承認の保存、実適用、DB再生成、Git操作、通信・通知、定期実行への組み込みはありません。
+
+### IDを指定して実行する
+
+`update_proposals.json` の `proposals[].proposal_id` にある64文字の完全なIDを使用します。`--proposal-id` は必須で、複数回指定できます。全件自動選択や短縮IDの解決は行いません。以下は、保存済みデータにこれらのIDが存在する場合の例です。
+
+```bash
+python monitor/preview_update_proposals.py \
+  --proposal-file monitor/generated/update_proposals.json \
+  --proposal-id bf3f97c6082e60a438d95aa13ca99acddb842282c2c0a3ab5af2cbde7078afc1 \
+  --proposal-id 89a49e55523db8f90b6df1e22a64235ca8f520e5e263fea769893b8657a49a87 \
+  --proposal-id 27ac8fca620564524e416f2e44f990e26941c3882134b4b09370d387b2e03de8
+```
+
+Windowsで `python` がPATHにない場合は `./.venv/Scripts/python.exe` を使用します。`--proposal-file` の既定値は `monitor/generated/update_proposals.json`、`--schedule` はプロジェクトの `schedule.json`、`--output-dir` は `monitor/generated/preview/` です。別のscheduleを渡す場合も読み取り専用です。`--output-dir` は `monitor/generated/` 配下だけに指定できます。
+
+同じIDの複数指定、入力JSON内のID重複、存在しないIDは、いずれも明確なエラーとして全体を拒否します。JSONの重複キー、非標準定数、未知version、`apply_allowed:false` でない入力、生成元simulationが失敗した入力も拒否します。
+
+### statusと再検証
+
+- `pending`／`approved`: IDを明示選択した場合に限ってpreview可能。`pending` は承認済みを意味しません。ID指定もpreview対象の選択という意味だけです。
+- `rejected`／`needs_review`／未知status: 拒否します。残っている `review_reasons` も拒否します。
+- 選択候補と関連する `validation_errors`: 隔離済みのadd/remove、時刻変更の旧便・新便、競合proposalをたどり、同じ系統番号・時刻・乗り場の候補を拒否します。関係を特定できない同一route/dayのエラーも安全側で拒否します。無関係な候補のエラーは件数をsummaryへ残します。
+
+proposal IDは既存generatorと同じcanonical JSONからSHA-256を再計算して検証します。IDは内容の整合性確認用で、署名や永続的な承認の証明ではありません。direction、day type、操作種別、before/after、ASCIIのHH:MM、完全な系統表記、乗り場を再検証します。対象のscheduleは既存の3方向・weekday/weekend形式、各便は `time`・`line`・`stop` の3キーを前提とします。
+
+削除・時刻変更ではbefore便が現在のscheduleに完全一致で1件だけ存在し、同じ系統番号の別表記による曖昧性がないことを検証します。追加・時刻変更ではafter便がまだ存在しないことを検証し、不一致は `stale/conflict` として拒否します。時刻変更はdirection/day内で完全なline・stopを維持し、変更幅1〜60分、同じ系統の既存発車時刻をまたがないことも確認します。保存された `time_context` やsimulation結果だけを信用せず、現在のscheduleで調べ直します。
+
+同じ便の二重remove、removeとtime_change、同一便のadd重複、addとtime_change先の重複、選択した変更同士の前提依存を拒否します。現在存在する便を「別proposalで先に削除すれば追加できる」とは扱いません。選択した全件のvalidationとsimulationが成功した場合だけ出力し、一部だけ成功扱いにはしません。statusやapprovalは変更しません。
+
+### 出力とdiff
+
+成功時には `monitor/generated/preview/<SHA-256>/` に以下をまとめて出力します。
+
+- `schedule.preview.json`: 仮適用後のscheduleコピー。
+- `schedule.diff`: 入力とコピーのunified diff。対象ファイル名にはinput/copyを明記します。
+- `summary.txt`: `[追加]`・`[削除]`・`[時刻変更]` ごとのdirection/day、変更前後の便、完全proposal IDと集計。ターミナルにも表示します。
+- `summary.json`: 選択IDと元proposal/status、変更種別件数、before/after便数、simulation結果、入力・コピーのSHA-256、`apply_allowed:false`、`apply_performed:false`。
+
+元JSONのkey順、未変更便の配列順、空白、インデント、LF/CRLF、BOM、末尾改行を可能な限り維持します。変更のあるday配列だけを組み立て直し、新便は時刻に応じて挿入します。未変更の便の相対順序は変えません。もともと空の配列への追加はその配列内だけ新たに整形します。JSON全体の再整形に頼らず、semantic summaryでも変更を確認できます。
+
+出力先のSHA-256は全artifactの内容から決定します。入力scheduleのバイト列と選択proposalの内容が同じなら、ID指定順やproposal配列順を変えても出力内容・出力先は同一です。繰り返し実行は既存の一致した出力を再利用し、ファイルを増やしたり上書きしたりしません。入力内容や選択が異なる場合だけ別ディレクトリになります。過去のpreviewは自動削除しません。
+
+出力先のpath traversal、symlink/junction、artifactのhardlink、入力や保護対象の別名指定を拒否します。生成物は一時ディレクトリ内に全件を書き終えてから、新しいdigestディレクトリとして公開します。失敗時は一時ファイルを片付け、既存の成功previewを変更しません。既存の同名出力に異なる内容があれば上書きを拒否します。実scheduleへのrename・replace処理はありません。
+
+終了コードは成功・同一出力の再利用が `0`、validation/stale/conflict/入出力エラーが `1`、必須引数不足などCLI構文エラーが `2` です。失敗時に新しいcandidateを成功扱いで出力しません。以前のpreviewが残っていても、その実行の成功を示すものではありません。
+
+### simulationの再利用とテスト
+
+既存 `simulate_proposals()` に `include_candidate=True` を指定し、成功した場合だけメモリ上の検証済みコピーを受け取ります。既定の戻り値とgeneratorの出力schemaは変わりません。previewはこれに明示選択、stale/競合検証、書式維持、diff、出力保護を加えています。
+
+`python -m unittest discover -s tests -v` で既存generator/APIとpreviewの回帰テストをまとめて実行できます。テストは合成データと一時ディレクトリで実行し、schedule・DBのSHA-256不変性、全体失敗、出力先保護、決定性も確認します。
 
 ## to_uni の扱い
 

@@ -716,6 +716,8 @@ def validate_time_change(
 def simulate_proposals(
     schedule: dict[str, Any],
     proposals: list[dict[str, Any]],
+    *,
+    include_candidate: bool = False,
 ) -> dict[str, Any]:
     """Apply proposals to an in-memory copy and validate the resulting schedule."""
 
@@ -812,7 +814,7 @@ def simulate_proposals(
 
     after_count = schedule_bus_count(simulated)
     unique_errors = sorted(set(errors))
-    return {
+    result = {
         "status": "passed" if not unique_errors else "failed",
         "proposals_simulated": len(proposals),
         "successful_changes": simulated_count,
@@ -821,6 +823,11 @@ def simulate_proposals(
         "bus_count_delta": after_count - before_count,
         "errors": unique_errors,
     }
+    # Preview may consume the validated copy; the default report stays unchanged.
+    # A failed simulation must never expose a partially changed candidate.
+    if include_candidate and not unique_errors:
+        result["candidate_schedule"] = simulated
+    return result
 
 
 def build_update_proposals(
