@@ -106,7 +106,7 @@ python monitor/run_route_search_check.py --skip-fetch --fail-on-diff
 
 `--skip-fetch` は `monitor/research_route_search.py` だけをスキップし、保存済みの `monitor/debug/` 配下のHTMLから抽出、正規化、比較、候補表示をやり直します。
 
-`--fail-on-diff` は `monitor/debug/route_search_compare.json` の `summary` を確認し、`added_count`、`removed_count`、`line_only_count`、`time_change_candidate_count` のいずれかが1以上なら終了コード `2` を返します。
+`--fail-on-diff` は `monitor/debug/route_search_compare.json` の `summary` を確認し、`added_count`、`removed_count`、`line_only_count`、`time_change_candidate_count`、`arrival_time_change_count` のいずれかが1以上なら終了コード `2` を返します。
 
 ### 処理の流れ
 
@@ -136,7 +136,7 @@ route search HTML取得
 
 - `monitor/research_route_search.py`: 発着指定検索のHTML、POST内容、ページ送り結果を `monitor/debug/` に保存する
 - `monitor/extract_route_search_debug.py`: 保存済みHTMLから発着時刻、停留所、乗り場、系統などを抽出し、`monitor/debug/route_search_extracted.json` を保存する
-- `monitor/convert_route_search_extracted.py`: 抽出結果を `route` / `day_type` / `time` / `line` / `stop` を持つ比較用形式に正規化し、`monitor/debug/route_search_normalized.json` を保存する
+- `monitor/convert_route_search_extracted.py`: 抽出結果を `route` / `day_type` / `time` / `arrival_time` / `line` / `stop` を持つ比較用形式に正規化し、`monitor/debug/route_search_normalized.json` を保存する
 - `monitor/compare_route_search_normalized.py`: `schedule.json` と `monitor/debug/route_search_normalized.json` を比較し、`monitor/debug/route_search_compare.json` を保存する
 - `monitor/print_route_search_candidates.py`: `monitor/debug/route_search_compare.json` を読み、人間確認用の候補一覧を表示する
 - `monitor/run_route_search_check.py`: route search調査パイプラインをまとめて実行するrunner
@@ -224,11 +224,12 @@ state保存
 fingerprintは、人間が確認すべき論理差分だけを対象にします。
 
 - 通常monitor: `monitor/update_candidates.json` の `routes` 配下
-- route search: `monitor/debug/route_search_compare.json` の `routes -> route -> day_type` 配下にある以下4カテゴリ
+- route search: `monitor/debug/route_search_compare.json` の `routes -> route -> day_type` 配下にある以下5カテゴリ
   - `added`
   - `removed`
   - `line_only`
   - `time_change_candidates`
+  - `arrival_time_changes`
 
 以下はfingerprint対象外です。
 
@@ -544,9 +545,9 @@ Windowsで `python` がPATHにない場合は `./.venv/Scripts/python.exe` を�
 - `rejected`／`needs_review`／未知status: 拒否します。残っている `review_reasons` も拒否します。
 - 選択候補と関連する `validation_errors`: 隔離済みのadd/remove、時刻変更の旧便・新便、競合proposalをたどり、同じ系統番号・時刻・乗り場の候補を拒否します。関係を特定できない同一route/dayのエラーも安全側で拒否します。無関係な候補のエラーは件数をsummaryへ残します。
 
-proposal IDは既存generatorと同じcanonical JSONからSHA-256を再計算して検証します。IDは内容の整合性確認用で、署名や永続的な承認の証明ではありません。direction、day type、操作種別、before/after、ASCIIのHH:MM、完全な系統表記、乗り場を再検証します。対象のscheduleは既存の3方向・weekday/weekend形式、各便は `time`・`line`・`stop` の3キーを前提とします。
+proposal IDは既存generatorと同じcanonical JSONからSHA-256を再計算して検証します。IDは内容の整合性確認用で、署名や永続的な承認の証明ではありません。direction、day type、操作種別、before/after、ASCIIのHH:MM、完全な系統表記、乗り場を再検証します。対象のscheduleは既存の3方向・weekday/weekend形式、各便は `time`・`line`・`stop` と任意の `arrival_time`（HH:MM/null）を受け付けます。
 
-削除・時刻変更ではbefore便が現在のscheduleに完全一致で1件だけ存在し、同じ系統番号の別表記による曖昧性がないことを検証します。追加・時刻変更ではafter便がまだ存在しないことを検証し、不一致は `stale/conflict` として拒否します。時刻変更はdirection/day内で完全なline・stopを維持し、変更幅1〜60分、同じ系統の既存発車時刻をまたがないことも確認します。保存された `time_context` やsimulation結果だけを信用せず、現在のscheduleで調べ直します。
+削除・時刻変更・到着変更ではbefore便が現在のscheduleに完全一致で1件だけ存在し、同じ系統番号の別表記による曖昧性がないことを検証します。追加・時刻変更ではafter便がまだ存在しないことを検証し、不一致は `stale/conflict` として拒否します。時刻変更はdirection/day内で完全なline・stopを維持し、変更幅1〜60分、同じ系統の既存発車時刻をまたがないことも確認します。保存された `time_context` やsimulation結果だけを信用せず、現在のscheduleで調べ直します。
 
 同じ便の二重remove、removeとtime_change、同一便のadd重複、addとtime_change先の重複、選択した変更同士の前提依存を拒否します。現在存在する便を「別proposalで先に削除すれば追加できる」とは扱いません。選択した全件のvalidationとsimulationが成功した場合だけ出力し、一部だけ成功扱いにはしません。statusやapprovalは変更しません。
 
@@ -556,7 +557,7 @@ proposal IDは既存generatorと同じcanonical JSONからSHA-256を再計算し
 
 - `schedule.preview.json`: 仮適用後のscheduleコピー。
 - `schedule.diff`: 入力とコピーのunified diff。対象ファイル名にはinput/copyを明記します。
-- `summary.txt`: `[追加]`・`[削除]`・`[時刻変更]` ごとのdirection/day、変更前後の便、完全proposal IDと集計。ターミナルにも表示します。
+- `summary.txt`: `[追加]`・`[削除]`・`[時刻変更]`・`[到着時刻変更]` ごとのdirection/day、変更前後の便、完全proposal IDと集計。ターミナルにも表示します。
 - `summary.json`: 選択IDと元proposal/status、変更種別件数、before/after便数、simulation結果、入力・コピーのSHA-256、`apply_allowed:false`、`apply_performed:false`。
 
 元JSONのkey順、未変更便の配列順、空白、インデント、LF/CRLF、BOM、末尾改行を可能な限り維持します。変更のあるday配列だけを組み立て直し、新便は時刻に応じて挿入します。未変更の便の相対順序は変えません。もともと空の配列への追加はその配列内だけ新たに整形します。JSON全体の再整形に頼らず、semantic summaryでも変更を確認できます。
@@ -582,3 +583,9 @@ proposal IDは既存generatorと同じcanonical JSONからSHA-256を再計算し
 ## 変更範囲
 
 monitor は確認用のファイルを `monitor/` と `monitor/debug/` 配下に保存します。既存の `app.py`、`bus.db`、`Scriptable_Scripts/` は変更しません。DB更新や `schedule.json` の上書きは行いません。
+
+## 到着時刻の保持・比較
+
+公式確認済み `arrival_time`（HH:MM/null）をextract→normalize→compare→proposal→previewへ保持します。旧入力の到着欠落は扱え、登録済み到着を欠落だけで消しません。`arrival_time_changes` は到着のみの変更を表し、曖昧な対応はvalidation errorとして隔離します。runnerのfail-on-diff・fingerprintにも含めます。到着のみのproposalはneeds_reviewで、自動承認・実適用はありません。
+
+全214便の公式根拠、方向とstopの意味、207便の確認値・7便のnull一覧、DB移行とoffline監査は [ARRIVAL_TIMES.md](ARRIVAL_TIMES.md) を参照してください。

@@ -47,13 +47,13 @@ STATUS_VALUES = ("pending", "needs_review", "approved", "rejected")
 VALID_DIRECTIONS = {"to_uni", "to_station", "to_nakahashi"}
 DAY_TYPES = {"weekday", "weekend"}
 VALID_STOPS = {"A", "B", "C", "D"}
-ROUTE_CATEGORIES = ("added", "removed", "line_only", "time_change_candidates")
+ROUTE_CATEGORIES = ("added", "removed", "line_only", "time_change_candidates", "arrival_time_changes")
 
 TIME_PATTERN = re.compile(r"^(?:[01]\d|2[0-3]):[0-5]\d$", re.ASCII)
 LINE_ID_PATTERN = re.compile(r"^\d+[A-Za-z]?$", re.ASCII)
 SCHEDULE_LINE_PATTERN = re.compile(r"^\([0-9]+\) [^\r\n|]+$")
 
-Bus = dict[str, str]
+Bus = dict[str, str | None]
 Schedule = dict[str, dict[str, list[Bus]]]
 ReviewIndex = dict[tuple[str, ...], dict[str, Any]]
 
@@ -136,7 +136,12 @@ def bus_from(value: object) -> Bus | None:
         "time": text(value.get("time")),
         "line": text(value.get("line")),
         "stop": text(value.get("stop")),
+        **({"arrival_time": value["arrival_time"]} if "arrival_time" in value else {}),
     }
+
+
+def same_bus(left: dict[str, Any], right: dict[str, Any]) -> bool:
+    return bus_key(left) == bus_key(right) and left.get("arrival_time") == right.get("arrival_time")
 
 
 def bus_key(bus: dict[str, Any]) -> tuple[str, str, str]:
@@ -260,6 +265,8 @@ def candidate_bus_errors(
     errors: list[str] = []
     if not is_valid_time(item.get(time_field)):
         errors.append(f"invalid_{time_field}")
+    if item.get("arrival_time") is not None and not is_valid_time(item["arrival_time"]):
+        errors.append("invalid_arrival_time")
     if not is_valid_line(item.get(line_field)):
         errors.append(f"invalid_{line_field}")
     stop = item.get(stop_field)
@@ -411,6 +418,7 @@ def make_proposal(
             "add": "added",
             "remove": "removed",
             "time_change": "time_change_candidates",
+            "arrival_time_change": "arrival_time_changes",
         }.get(change_type, change_type),
         "status": proposal_status(reviewed_item),
         "source": source_path,
@@ -552,6 +560,9 @@ def prepare_time_changes(
                     for item in raw:
                         if isinstance(item, dict) and bus_key(item) == bus_key(nested):
                             codes.extend(record_context_errors(item, direction, day_type))
+                            codes.extend(candidate_bus_errors(item, stops=VALID_STOPS))
+                            if item.get("arrival_time") != nested.get("arrival_time"):
+                                codes.append("time_change_component_arrival_mismatch")
             identity = canonical_json([bus_from(old), bus_from(new)])
             removed_owners[component_key(old)].add(identity)
             added_owners[component_key(new)].add(identity)
@@ -587,7 +598,7 @@ def candidate_list(
     day_type: str,
     add_error: Any,
 ) -> list[Any]:
-    value = detail.get(category)
+    value = detail.get(category, [] if category == "arrival_time_changes" else None)
     if isinstance(value, list):
         return sorted(value, key=canonical_json)
     add_error(
@@ -700,17 +711,51 @@ def validate_time_change(
             errors.append("time_change_current_bus_missing_from_schedule")
         elif len(matches) > 1:
             errors.append("time_change_current_bus_duplicated_in_schedule")
+        elif "arrival_time" in existing_item and not same_bus(matches[0], existing_item):
+            errors.append("time_change_stale_arrival_time")
+        else:
+            existing_item = copy.deepcopy(matches[0])
 
     proposed_item: Bus | None = None
     if existing_item is not None and is_valid_time(new_time):
         proposed_item = dict(existing_item)
         proposed_item["time"] = new_time
+        # A different departure is a different trip. Never carry its old arrival.
+        if "arrival_time" in existing_item or (route_search_item and "arrival_time" in route_search_item):
+            proposed_item["arrival_time"] = route_search_item.get("arrival_time") if route_search_item else None
         if not errors:
             current = schedule_items(schedule, direction, day_type)
             if any(component_key(bus) == component_key(proposed_item) for bus in current):
                 errors.append("time_change_target_already_exists")
 
     return sorted(set(errors)), existing_item, proposed_item
+
+
+def validate_arrival_change(candidate, schedule, direction, day_type):
+    codes = context_errors(schedule, direction, day_type)
+    if not isinstance(candidate, dict) or candidate.get("ambiguous"):
+        return codes + ["ambiguous_arrival_time_change"], None, None
+    old, new = bus_from(candidate.get("existing_item")), bus_from(candidate.get("route_search_item"))
+    for item in (candidate, candidate.get("existing_item"), candidate.get("route_search_item")):
+        codes.extend(record_context_errors(item, direction, day_type))
+    for item in (old, new):
+        codes.extend(candidate_bus_errors(item, stops=VALID_STOPS))
+    if codes or old is None or new is None:
+        return sorted(set(codes)), None, None
+    if component_key(old) != component_key(new) or component_key(candidate) != component_key(old):
+        codes.append("arrival_change_trip_mismatch")
+    if SCHEDULE_LINE_PATTERN.fullmatch(new["line"]) and new["line"] != old["line"]:
+        codes.append("arrival_change_full_line_changed")
+    if new.get("arrival_time") is None or old.get("arrival_time") == new.get("arrival_time"):
+        codes.append("arrival_change_requires_new_confirmed_time")
+    current = schedule_items(schedule, direction, day_type)
+    matches = [bus for bus in current if component_key(bus) == component_key(old)]
+    if len(matches) != 1 or not same_bus(matches[0], old):
+        codes.append("arrival_change_stale_or_ambiguous")
+    if codes:
+        return sorted(set(codes)), None, None
+    before = copy.deepcopy(matches[0])
+    return [], before, dict(before, arrival_time=new["arrival_time"])
 
 
 def simulate_proposals(
@@ -748,12 +793,18 @@ def simulate_proposals(
             operation = change.get("operation")
             before = bus_from(change.get("before"))
             after = bus_from(change.get("after"))
-            expected_type = {"add": "add", "remove": "remove", "replace": "time_change"}
+            expected_type = {"add": ("add",), "remove": ("remove",),
+                             "replace": ("time_change", "arrival_time_change")}
             if not isinstance(operation, str) or operation not in expected_type:
                 errors.append(f"{proposal_id}: unknown operation {operation!r}")
                 continue
-            if proposal.get("change_type") != expected_type[operation]:
+            if proposal.get("change_type") not in expected_type[operation]:
                 errors.append(f"{proposal_id}: change type does not match operation")
+                continue
+            if proposal.get("change_type") == "arrival_time_change" and (
+                    before is None or after is None or bus_key(before) != bus_key(after)
+                    or before.get("arrival_time") == after.get("arrival_time")):
+                errors.append(f"{proposal_id}: arrival change must change only arrival_time")
                 continue
             if ((operation == "add" and change.get("before") is not None)
                     or (operation == "remove" and change.get("after") is not None)
@@ -779,7 +830,7 @@ def simulate_proposals(
                     matching_indexes = [
                         index
                         for index, bus in enumerate(target)
-                        if isinstance(bus, dict) and bus_key(bus) == bus_key(before)
+                        if isinstance(bus, dict) and same_bus(bus, before)
                     ]
                     if len(matching_indexes) != 1:
                         errors.append(
@@ -912,7 +963,7 @@ def build_update_proposals(
             day_errors = context_errors(schedule, direction, day_type)
             unknown = set(detail) - set(ROUTE_CATEGORIES) - {
                 "existing_count", "route_search_count", "added_count", "removed_count",
-                "line_only_count", "time_change_candidate_count",
+                "line_only_count", "time_change_candidate_count", "arrival_time_change_count",
             }
             if unknown:
                 day_errors.append("unknown_comparison_fields: " + ", ".join(sorted(unknown)))
@@ -933,7 +984,8 @@ def build_update_proposals(
                     add_error=add_error,
                 )
                 input_counts[category] += len(categorized[category])
-            if any(not isinstance(detail.get(category), list) for category in ROUTE_CATEGORIES):
+            if any(not isinstance(detail.get(category, [] if category == "arrival_time_changes" else None), list)
+                   for category in ROUTE_CATEGORIES):
                 continue
 
             consumed_added: set[tuple[str, str, str]] = set()
@@ -973,6 +1025,9 @@ def build_update_proposals(
                     proposal["review_reasons"] = ["time_change_crosses_existing_departure"]
                 elif proposal["status"] == "needs_review":
                     proposal["review_reasons"] = ["unconfirmed_time_change_pairing"]
+                if after.get("arrival_time") is not None:
+                    proposal["status"] = "needs_review"
+                    proposal["review_reasons"] = sorted(set(proposal.get("review_reasons", []) + ["arrival_requires_review"]))
                 add_proposal(proposal)
                 consumed_removed.add(bus_key(candidate["existing_item"]))
                 consumed_added.add(bus_key(candidate["route_search_item"]))
@@ -1035,6 +1090,8 @@ def build_update_proposals(
 
                 after = dict(candidate_bus)
                 after["line"] = resolved_line
+                if any("arrival_time" in item for item in existing):
+                    after.setdefault("arrival_time", None)
                 review = reviews.get(direct_review_key(str(direction), str(day_type), "added", candidate))
                 add_proposal(
                     make_proposal(
@@ -1070,6 +1127,12 @@ def build_update_proposals(
                         validation_codes.append("removed_bus_missing_from_schedule")
                     elif match_count > 1:
                         validation_codes.append("removed_bus_duplicated_in_schedule")
+                    else:
+                        current_bus = next(bus for bus in existing if bus_key(bus) == bus_key(before))
+                        if "arrival_time" in before and not same_bus(before, current_bus):
+                            validation_codes.append("removed_stale_arrival_time")
+                        else:
+                            before = copy.deepcopy(current_bus)
 
                 if validation_codes or before is None:
                     add_error(
@@ -1094,6 +1157,20 @@ def build_update_proposals(
                         reviewed_item=review,
                     )
                 )
+
+            for candidate in categorized["arrival_time_changes"]:
+                codes, before, after = validate_arrival_change(candidate, schedule, str(direction), str(day_type))
+                if codes:
+                    add_error(make_validation_error(
+                        direction=direction, day_type=day_type, candidate_type="arrival_time_changes",
+                        candidate=candidate, codes=codes,
+                    ))
+                else:
+                    add_proposal(make_proposal(
+                        direction=str(direction), day_type=str(day_type), change_type="arrival_time_change",
+                        changes=[{"operation": "replace", "before": before, "after": after}],
+                        source_path=source_path, reviewed_item=None,
+                    ))
 
             for candidate in categorized["line_only"]:
                 validation_codes = context_errors(schedule, direction, day_type)
@@ -1138,7 +1215,7 @@ def build_update_proposals(
             proposal["review_reasons"] = sorted(set(proposal.get("review_reasons", []) + ["simulation_failed"]))
 
     by_status = {status: 0 for status in STATUS_VALUES}
-    by_change_type = {"add": 0, "remove": 0, "line_only": 0, "time_change": 0}
+    by_change_type = {"add": 0, "remove": 0, "line_only": 0, "time_change": 0, "arrival_time_change": 0}
     for proposal in proposals:
         by_status[proposal["status"]] += 1
         by_change_type[proposal["change_type"]] += 1
@@ -1168,7 +1245,8 @@ def build_update_proposals(
 def format_bus(bus: object) -> str:
     if not isinstance(bus, dict):
         return "-"
-    return f"{text(bus.get('time'))} {text(bus.get('line'))} {text(bus.get('stop'))}".strip()
+    arrival = f" → {bus['arrival_time']} 着" if bus.get("arrival_time") else ""
+    return f"{text(bus.get('time'))} 発{arrival} {text(bus.get('line'))} {text(bus.get('stop'))}".strip()
 
 
 def human_change_label(change_type: str) -> str:
@@ -1176,6 +1254,7 @@ def human_change_label(change_type: str) -> str:
         "add": "追加候補",
         "remove": "削除候補",
         "time_change": "時刻変更候補",
+        "arrival_time_change": "到着時刻変更候補",
     }.get(change_type, change_type)
 
 
@@ -1241,6 +1320,7 @@ def print_report(report: dict[str, Any]) -> None:
     print(f"removed: {by_change.get('remove', 0)}")
     print(f"line_only: {by_change.get('line_only', 0)}")
     print(f"time_change: {by_change.get('time_change', 0)}")
+    print(f"arrival_time_change: {by_change.get('arrival_time_change', 0)}")
     print(f"validation_errors: {summary.get('validation_error_count', 0)}")
     simulation = report.get("simulation", {})
     if isinstance(simulation, dict):

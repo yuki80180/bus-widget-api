@@ -272,6 +272,7 @@ def table_to_item(table: dict, source_file: str, route_key: str | None, page_ind
         "depart_stop": depart_stop,
         "depart_pole": depart_pole,
         "arrive_time": time_from_row(arrive_row, "time_dep[]"),
+        "arrival_time": time_from_row(arrive_row, "time_dep[]"),
         "arrive_stop": arrive_stop,
         "arrive_pole": arrive_pole,
         "fare": extract_fare(keiro_row),

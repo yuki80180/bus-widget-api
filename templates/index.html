@@ -247,7 +247,8 @@
 
         .departure-row {
             display: grid;
-            grid-template-columns: minmax(0, 1fr) auto;
+            grid-template-columns: minmax(0, 1fr);
+            justify-items: start;
             align-items: flex-end;
             gap: clamp(8px, 2.5vw, 16px);
             margin-top: 8px;
@@ -256,10 +257,10 @@
         .departure-time {
             min-width: 0;
             margin: 0;
-            font-size: clamp(52px, 17vw, 104px);
+            font-size: clamp(24px, 6.7vw, 42px);
             font-variant-numeric: tabular-nums;
             font-weight: 780;
-            line-height: 0.95;
+            line-height: 1.25;
             white-space: nowrap;
         }
 
@@ -311,7 +312,7 @@
 
         .following-item {
             display: grid;
-            grid-template-columns: 68px minmax(0, 1fr) auto;
+            grid-template-columns: minmax(0, 1fr) auto;
             min-height: 58px;
             align-items: center;
             gap: 12px;
@@ -323,7 +324,10 @@
         }
 
         .following-time {
-            font-size: 25px;
+            grid-column: 1 / -1;
+            padding-top: 12px;
+            font-size: clamp(20px, 5vw, 25px);
+            white-space: nowrap;
             font-variant-numeric: tabular-nums;
             font-weight: 750;
         }
@@ -460,7 +464,7 @@
 
         .timetable-item {
             display: grid;
-            grid-template-columns: 72px minmax(0, 1fr);
+            grid-template-columns: minmax(0, 1fr);
             min-width: 0;
             gap: 12px;
             padding: 14px 18px;
@@ -551,13 +555,12 @@
             }
 
             .following-item {
-                grid-template-columns: 64px minmax(0, 1fr);
+                grid-template-columns: minmax(0, 1fr) auto;
             }
 
             .following-remaining {
                 grid-column: 2;
-                margin-top: -10px;
-                padding-bottom: 8px;
+                margin-top: 0;
             }
 
             .timetable-header {
@@ -565,7 +568,7 @@
             }
 
             .timetable-item {
-                grid-template-columns: 64px minmax(0, 1fr);
+                grid-template-columns: minmax(0, 1fr);
                 gap: 9px;
                 padding: 13px 14px;
             }
@@ -871,7 +874,8 @@
             if (!stopName) {
                 return 'のりば情報なし';
             }
-            return bus.stop ? `${bus.stop}のりば・${stopName}` : stopName;
+            const role = state.direction === 'to_uni' ? '着' : '発';
+            return `${role}: ${bus.stop ? `${bus.stop}・` : ''}${stopName}`;
         }
 
         function formatTimetableDate(dateValue) {
@@ -909,13 +913,20 @@
             });
         }
 
+        function formatBusTimes(bus) {
+            const departure = `${bus.time || '--:--'} 発`;
+            return /^(?:[01][0-9]|2[0-3]):[0-5][0-9]$/.test(bus.arrival_time || '')
+                ? `${departure} → ${bus.arrival_time} 着`
+                : departure;
+        }
+
         function createFollowingItem(bus) {
             const item = document.createElement('li');
             item.className = 'following-item';
 
             const time = document.createElement('span');
             time.className = 'following-time';
-            time.textContent = bus.time || '--:--';
+            time.textContent = formatBusTimes(bus);
 
             const line = document.createElement('span');
             line.className = 'following-line';
@@ -932,7 +943,7 @@
         function renderSuccess(data) {
             const [nextBus, ...followingBuses] = data.buses;
             updateDirectionHeading(data.direction_detail);
-            elements.nextTime.textContent = nextBus.time || '--:--';
+            elements.nextTime.textContent = formatBusTimes(nextBus);
             elements.nextRemaining.textContent = formatMinutesUntil(nextBus.minutes_until);
             elements.nextLine.textContent = formatLine(nextBus);
             elements.nextDestination.textContent = data.direction_detail?.destination || '';
@@ -953,13 +964,13 @@
             if (nextService && nextBus && /^\d{2}:\d{2}$/.test(nextBus.time || '')) {
                 const dateLabel = formatNextServiceDate(nextService);
                 elements.nextServiceDate.textContent = dateLabel;
-                elements.nextServiceTime.textContent = nextBus.time;
+                elements.nextServiceTime.textContent = formatBusTimes(nextBus);
                 elements.nextServiceLine.textContent = formatLine(nextBus);
                 elements.nextServiceDestination.textContent = data.direction_detail?.destination || '';
                 elements.nextServiceStop.textContent = formatStop(nextBus);
                 elements.endFallback.hidden = true;
                 elements.nextServicePreview.hidden = false;
-                elements.status.textContent = `本日の運行は終了しました。次のバスは${dateLabel}${nextBus.time}です`;
+                elements.status.textContent = `本日の運行は終了しました。次のバスは${dateLabel}${formatBusTimes(nextBus)}です`;
             } else {
                 elements.status.textContent = '本日の運行は終了しました';
             }
@@ -995,10 +1006,9 @@
                 }
             }
 
-            const time = document.createElement('time');
+            const time = document.createElement('span');
             time.className = 'timetable-time';
-            time.dateTime = bus.time;
-            time.textContent = bus.time;
+            time.textContent = formatBusTimes(bus);
 
             const details = document.createElement('div');
             details.className = 'timetable-details';

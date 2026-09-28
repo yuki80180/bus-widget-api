@@ -67,15 +67,21 @@ def normalize_line_for_compare(line: str | None) -> str | None:
 
 
 def normalize_bus(record: dict[str, object]) -> Bus:
+    arrival = record.get("arrival_time", record.get("arrive_time"))
+    if arrival is not None and (not isinstance(arrival, str) or not re.fullmatch(
+            r"(?:[01][0-9]|2[0-3]):[0-5][0-9]", arrival)):
+        raise ValueError(f"invalid arrival_time: {arrival!r}")
     return {
         "time": normalize_text(record.get("time")),
+        "arrival_time": arrival,
         "line": normalize_optional_text(record.get("line")),
         "stop": normalize_text(record.get("stop")),
     }
 
 
 def sort_buses(items: list[Bus]) -> list[Bus]:
-    return sorted(items, key=lambda item: (item["time"], item["stop"], item["line"] or ""))
+    return sorted(items, key=lambda item: (item["time"], item["stop"], item["line"] or "",
+                                           item.get("arrival_time") or ""))
 
 
 def group_by_time_stop(items: list[Bus], *, label: str) -> GroupedByKey:
@@ -254,9 +260,32 @@ def compare_day(existing_records: list[Bus], route_search_records: list[Bus]) ->
         for bus in sort_buses(existing_groups[key])
     ]
     line_only = []
+    arrival_time_changes = []
     time_change_candidates = build_time_change_candidates(removed, added)
 
     for time, stop in common_keys:
+        old_rows = existing_groups[(time, stop)]
+        new_rows = route_search_groups[(time, stop)]
+        common_lines = set(normalized_line_values(old_rows)) & set(normalized_line_values(new_rows))
+        for line in sorted(common_lines, key=lambda value: value or ""):
+            old = sort_buses([b for b in old_rows if normalize_line_for_compare(b["line"]) == line])
+            new = sort_buses([b for b in new_rows if normalize_line_for_compare(b["line"]) == line])
+            arrivals = {b.get("arrival_time") for b in new}
+            # An old/missing source cannot erase an already confirmed arrival.
+            if arrivals == {None}:
+                continue
+            if len(old) == 1 and len(arrivals) == 1:
+                arrival = next(iter(arrivals))
+                if old[0].get("arrival_time") != arrival:
+                    arrival_time_changes.append({
+                        "time": time, "line": line, "stop": stop,
+                        "existing_item": old[0], "route_search_item": new[0],
+                    })
+            else:
+                arrival_time_changes.append({
+                    "time": time, "line": line, "stop": stop, "ambiguous": True,
+                    "existing_items": old, "route_search_items": new,
+                })
         existing_lines = line_summary(existing_groups[(time, stop)])
         route_search_lines = line_summary(route_search_groups[(time, stop)])
         existing_lines_normalized = normalized_line_values(existing_groups[(time, stop)])
@@ -281,10 +310,12 @@ def compare_day(existing_records: list[Bus], route_search_records: list[Bus]) ->
         "removed": removed,
         "line_only": line_only,
         "time_change_candidates": time_change_candidates,
+        "arrival_time_changes": arrival_time_changes,
         "added_count": len(added),
         "removed_count": len(removed),
         "line_only_count": len(line_only),
         "time_change_candidate_count": len(time_change_candidates),
+        "arrival_time_change_count": len(arrival_time_changes),
     }
 
 
@@ -301,6 +332,7 @@ def build_comparison(schedule_path: Path, route_search_path: Path) -> dict[str, 
             "removed_count": 0,
             "line_only_count": 0,
             "time_change_candidate_count": 0,
+            "arrival_time_change_count": 0,
         },
     }
 
@@ -316,6 +348,7 @@ def build_comparison(schedule_path: Path, route_search_path: Path) -> dict[str, 
         result["summary"]["removed_count"] += day_result["removed_count"]
         result["summary"]["line_only_count"] += day_result["line_only_count"]
         result["summary"]["time_change_candidate_count"] += day_result["time_change_candidate_count"]
+        result["summary"]["arrival_time_change_count"] += day_result["arrival_time_change_count"]
 
     return result
 
@@ -330,7 +363,8 @@ def print_summary(comparison: dict[str, Any]) -> None:
             f"added={day_result['added_count']} "
             f"removed={day_result['removed_count']} "
             f"line_only={day_result['line_only_count']} "
-            f"time_change_candidates={day_result['time_change_candidate_count']}"
+            f"time_change_candidates={day_result['time_change_candidate_count']} "
+            f"arrival_time_changes={day_result['arrival_time_change_count']}"
         )
 
 

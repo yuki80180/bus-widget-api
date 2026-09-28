@@ -26,7 +26,12 @@ PREVIEW_VERSION = 1
 ID_PATTERN = re.compile(r"[0-9a-f]{64}", re.ASCII)
 BUS_KEYS = {"time", "line", "stop"}
 CHANGE_TYPES = {"add": ("add", "added"), "remove": ("remove", "removed"),
-                "time_change": ("replace", "time_change_candidates")}
+                "time_change": ("replace", "time_change_candidates"),
+                "arrival_time_change": ("replace", "arrival_time_changes")}
+
+
+def valid_bus_keys(bus):
+    return isinstance(bus, dict) and BUS_KEYS <= bus.keys() <= BUS_KEYS | {"arrival_time"}
 
 
 class PreviewError(ValueError):
@@ -128,7 +133,7 @@ def validate_proposal(proposal: dict[str, Any], schedule: dict[str, Any],
             or (operation == "replace" and (before is None or after is None))):
         reject("inconsistent before/after buses")
     for bus in (before, after):
-        if bus is not None and (not isinstance(bus, dict) or set(bus) != BUS_KEYS
+        if bus is not None and (not valid_bus_keys(bus)
                 or generator.validate_schedule_structure({proposal["direction"]: {proposal["day_type"]: [bus]}})):
             reject("invalid bus: time, full line, stop and exact bus schema required")
     if proposal_identity(proposal) != identity:
@@ -138,9 +143,15 @@ def validate_proposal(proposal: dict[str, Any], schedule: dict[str, Any],
         if (sum(bus == before for bus in current) != 1
                 or sum(generator.component_key(bus) == generator.component_key(before) for bus in current) != 1):
             reject("stale/conflict: expected exactly one unambiguous before bus")
-    if after is not None and any(generator.component_key(bus) == generator.component_key(after) for bus in current):
+    if after is not None and any(generator.component_key(bus) == generator.component_key(after)
+                                 for bus in current if bus != before):
         reject("stale/conflict: after bus already exists")
-    if operation == "replace":
+    if change_type == "arrival_time_change":
+        if (generator.bus_key(before) != generator.bus_key(after)
+                or before.get("arrival_time") == after.get("arrival_time")
+                or after.get("arrival_time") is None):
+            reject("arrival_time_change must change only a confirmed arrival_time")
+    if change_type == "time_change":
         if before["line"] != after["line"] or before["stop"] != after["stop"]:
             reject("time_change must retain full line and stop")
         delta = abs(generator.time_to_minutes(after["time"]) - generator.time_to_minutes(before["time"]))
@@ -170,6 +181,12 @@ def ordered_candidate(original: dict[str, Any], candidate: dict[str, Any]) -> No
                 if old in remaining:
                     retained.append(old.copy())
                     remaining.remove(old)
+                else:
+                    replacement = next((row for row in remaining
+                                        if generator.bus_key(row) == generator.bus_key(old)), None)
+                    if replacement is not None:
+                        retained.append(replacement)
+                        remaining.remove(replacement)
             for new in sorted(remaining, key=generator.bus_sort_key):
                 position = next((i for i, row in enumerate(retained)
                                  if generator.bus_sort_key(row) > generator.bus_sort_key(new)), len(retained))
@@ -250,7 +267,11 @@ def render_candidate(original_bytes: bytes, original: dict[str, Any], candidate:
                     row_key = key + (index,)
                     row_start, row_end = spans[row_key]
                     rendered_row = source[row_start:row_end]
-                    for name in sorted(BUS_KEYS, key=lambda name: spans[row_key + (name,)][0], reverse=True):
+                    if row.keys() != old_rows[index].keys():
+                        # Legacy rows can gain the optional key; reformat only this row.
+                        rendered_rows.append(json.dumps(row, ensure_ascii=source.isascii()))
+                        continue
+                    for name in sorted(row, key=lambda name: spans[row_key + (name,)][0], reverse=True):
                         if row[name] == old_rows[index][name]:
                             continue
                         value_start, value_end = spans[row_key + (name,)]
@@ -284,8 +305,8 @@ def build_preview(report: dict[str, Any], selected_ids: list[str], schedule_byte
     errors = generator.validate_schedule_structure(schedule)
     if errors:
         raise PreviewError("invalid schedule: " + "; ".join(errors))
-    if any(set(bus) != BUS_KEYS for days in schedule.values() for rows in days.values() for bus in rows):
-        raise PreviewError("schedule buses must contain exactly time, line and stop")
+    if any(not valid_bus_keys(bus) for days in schedule.values() for rows in days.values() for bus in rows):
+        raise PreviewError("schedule buses require time, line, stop and optional arrival_time")
     selected = [copy.deepcopy(index[identity]) for identity in selected_ids]
     for proposal in selected:
         validate_proposal(proposal, schedule, report["validation_errors"])
@@ -334,13 +355,15 @@ def build_preview(report: dict[str, Any], selected_ids: list[str], schedule_byte
     lines = ["Update Proposal Preview", "-----------------------", ""]
     for proposal in selected:
         change = proposal["changes"][0]
-        label = {"add": "追加", "remove": "削除", "time_change": "時刻変更"}[proposal["change_type"]]
+        label = {"add": "追加", "remove": "削除", "time_change": "時刻変更",
+                 "arrival_time_change": "到着時刻変更"}[proposal["change_type"]]
         lines.extend([f"[{label}] {proposal['direction']} / {proposal['day_type']}",
                       "変更前: " + generator.format_bus(change["before"]),
                       "変更後: " + generator.format_bus(change["after"]),
                       "Proposal: " + proposal["proposal_id"], ""])
     lines.extend([f"selected proposals: {len(selected)}", f"added: {counts['add']}",
                   f"removed: {counts['remove']}", f"time_change: {counts['time_change']}",
+                  f"arrival_time_change: {counts['arrival_time_change']}",
                   f"before buses: {summary['before_bus_count']}", f"after buses: {summary['after_bus_count']}",
                   "conflicts: 0", "validation errors: 0",
                   f"unselected source validation errors: {len(report['validation_errors'])}",

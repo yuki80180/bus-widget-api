@@ -273,11 +273,12 @@ def print_route_day(
     added = as_list(detail.get("added"))
     removed = as_list(detail.get("removed"))
     line_only = as_list(detail.get("line_only"))
+    arrivals = as_list(detail.get("arrival_time_changes"))
 
     print(f"Route: {route} / {day_type}")
     print()
 
-    if not (time_change_candidates or added or removed or line_only):
+    if not (time_change_candidates or added or removed or line_only or arrivals):
         print("差分なし")
         print()
         return
@@ -290,6 +291,11 @@ def print_route_day(
         print_removed(route, day_type, removed, reviewed_index)
     if line_only:
         print_line_only(line_only)
+    for item in arrivals:
+        before = item.get("existing_item", {}).get("arrival_time")
+        after = item.get("route_search_item", {}).get("arrival_time")
+        print(f"[到着時刻変更] {item.get('time')} 発 / {item.get('line')} / {item.get('stop')}: "
+              f"{before} → {after}" + (" (対応が曖昧・要確認)" if item.get("ambiguous") else ""))
 
 
 def print_summary(summary: dict[str, Any]) -> None:
@@ -298,6 +304,7 @@ def print_summary(summary: dict[str, Any]) -> None:
     print(f"removed: {int_value(summary.get('removed_count'))}")
     print(f"line_only: {int_value(summary.get('line_only_count'))}")
     print(f"time_change_candidates: {int_value(summary.get('time_change_candidate_count'))}")
+    print(f"arrival_time_changes: {int_value(summary.get('arrival_time_change_count'))}")
 
 
 def print_report(data: dict[str, Any], reviewed_index: ReviewedIndex | None) -> None:

@@ -74,6 +74,7 @@ def extract_line_number(line):
 def serialize_bus(row, current_time=None):
     bus = {
         "time": row["time"],
+        "arrival_time": row["arrival_time"] if "arrival_time" in row.keys() else None,
         "line": row["line"],
         "line_number": extract_line_number(row["line"]),
         "stop": row["stop"],
@@ -100,10 +101,10 @@ def fetch_next_buses(direction, day_type, current_time):
 
         rows = conn.execute(
             """
-            SELECT time, line, stop
+            SELECT *
             FROM bus_schedule
             WHERE direction = ? AND day_type = ? AND time > ?
-            ORDER BY time ASC
+            ORDER BY time ASC, id ASC
             LIMIT 3
             """,
             (direction, day_type, current_time),
@@ -116,10 +117,10 @@ def fetch_first_bus(direction, day_type):
     with closing(get_db_connection()) as conn:
         row = conn.execute(
             """
-            SELECT time, line, stop
+            SELECT *
             FROM bus_schedule
             WHERE direction = ? AND day_type = ?
-            ORDER BY time ASC
+            ORDER BY time ASC, id ASC
             LIMIT 1
             """,
             (direction, day_type),
@@ -138,7 +139,7 @@ def fetch_timetable(direction, day_type):
 
         rows = conn.execute(
             """
-            SELECT time, line, stop
+            SELECT *
             FROM bus_schedule
             WHERE direction = ? AND day_type = ?
             ORDER BY time ASC, id ASC

@@ -111,7 +111,7 @@ class BusApiTestCase(unittest.TestCase):
         self.assertEqual(next_service["days_ahead"], expected_days_ahead)
         self.assertEqual(next_service["bus"]["time"], expected_time)
         self.assertEqual(
-            {"time", "line", "line_number", "stop", "stop_name"},
+            {"time", "arrival_time", "line", "line_number", "stop", "stop_name"},
             set(next_service["bus"]),
         )
         self.assertNotIn("minutes_until", next_service["bus"])
@@ -248,7 +248,7 @@ class BusApiTestCase(unittest.TestCase):
         for bus in data["buses"]:
             self.assertEqual(
                 set(bus),
-                {"time", "line", "line_number", "stop", "stop_name"},
+                {"time", "arrival_time", "line", "line_number", "stop", "stop_name"},
             )
             self.assertNotIn("minutes_until", bus)
         self.assertEqual(data["buses"][0]["line_number"], "10")

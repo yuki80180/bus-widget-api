@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -34,6 +35,26 @@ ROUTE_MAP = {
     },
 }
 ROUTE_ORDER = {mapping["route"]: index for index, mapping in enumerate(ROUTE_MAP.values())}
+for _key, _mapping in list(ROUTE_MAP.items()):
+    ROUTE_MAP[_key.replace("_weekday", "_weekend")] = {**_mapping, "day_type": "weekend"}
+
+
+def confirmed_arrival(item: dict[str, Any], route: str) -> str | None:
+    """Only retain an official arrival for the expected pair of endpoints."""
+    value = item.get("arrival_time", item.get("arrive_time"))
+    if value is None:
+        return None
+    if not isinstance(value, str) or not re.fullmatch(r"(?:[01][0-9]|2[0-3]):[0-5][0-9]", value):
+        raise ValueError(f"invalid arrival_time: {value!r}")
+    origin, destination = item.get("depart_stop") or "", item.get("arrive_stop") or ""
+    if route == "to_uni":
+        valid = (origin == "金沢駅" or origin.startswith("金沢駅［")) and destination == "金沢工業大学"
+        valid = valid and item.get("arrive_pole") in {"A", "C"}
+    else:
+        valid = origin == "金沢工業大学" and item.get("depart_pole") in {"B", "D"}
+        valid = valid and (destination == "中橋" if route == "to_nakahashi" else
+                           destination == "金沢駅" or destination.startswith("金沢駅［"))
+    return value if valid else None
 
 
 def load_items(path: Path) -> list[dict[str, Any]]:
@@ -63,6 +84,7 @@ def normalize_item(item: dict[str, Any]) -> dict[str, Any] | None:
         "route": mapping["route"],
         "day_type": mapping["day_type"],
         "time": item.get(mapping["time_field"]),
+        "arrival_time": confirmed_arrival(item, mapping["route"]),
         "line": item.get("line"),
         "stop": item.get(mapping["pole_field"]),
         "pole": item.get(mapping["pole_field"]),

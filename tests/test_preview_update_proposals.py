@@ -342,7 +342,7 @@ class PreviewTestCase(unittest.TestCase):
         self.assertFalse(g.validate_schedule_structure(candidate))
         self.assertEqual(summary["before_bus_count"], 4)
         self.assertEqual(summary["after_bus_count"], 4)
-        self.assertEqual(summary["by_change_type"], {"add": 1, "remove": 1, "time_change": 1})
+        self.assertEqual(summary["by_change_type"], {"add": 1, "remove": 1, "time_change": 1, "arrival_time_change": 0})
 
     def test_deterministic_output_and_selection_report_order(self):
         proposals = [self.proposal(), self.proposal("remove"), self.proposal("time_change")]

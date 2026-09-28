@@ -67,7 +67,7 @@ def count_summary_value(summary: dict[str, object], key: str) -> int:
         return 0
 
 
-def print_summary(diff: dict[str, object]) -> tuple[int, int, int, int]:
+def print_summary(diff: dict[str, object]) -> tuple[int, ...]:
     summary = diff.get("summary", {})
     if not isinstance(summary, dict):
         summary = {}
@@ -76,18 +76,20 @@ def print_summary(diff: dict[str, object]) -> tuple[int, int, int, int]:
     removed_count = count_summary_value(summary, "removed_count")
     line_only_count = count_summary_value(summary, "line_only_count")
     time_change_candidate_count = count_summary_value(summary, "time_change_candidate_count")
+    arrival_count = count_summary_value(summary, "arrival_time_change_count")
 
     print("\n== Route search summary ==")
-    if not (added_count or removed_count or line_only_count or time_change_candidate_count):
+    if not (added_count or removed_count or line_only_count or time_change_candidate_count or arrival_count):
         print("差分なし")
-        return added_count, removed_count, line_only_count, time_change_candidate_count
+        return added_count, removed_count, line_only_count, time_change_candidate_count, arrival_count
 
     print(f"added: {added_count}")
     print(f"removed: {removed_count}")
     print(f"line_only: {line_only_count}")
     print(f"time_change_candidates: {time_change_candidate_count}")
+    print(f"arrival_time_changes: {arrival_count}")
 
-    return added_count, removed_count, line_only_count, time_change_candidate_count
+    return added_count, removed_count, line_only_count, time_change_candidate_count, arrival_count
 
 
 def main() -> int:

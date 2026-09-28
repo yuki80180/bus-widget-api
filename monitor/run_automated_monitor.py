@@ -23,12 +23,14 @@ ROUTE_SUMMARY_KEYS = (
     "removed_count",
     "line_only_count",
     "time_change_candidate_count",
+    "arrival_time_change_count",
 )
 ROUTE_SEARCH_DIFF_KEYS = (
     "added",
     "removed",
     "line_only",
     "time_change_candidates",
+    "arrival_time_changes",
 )
 
 
@@ -64,6 +66,9 @@ def required_summary_counts(data: dict[str, Any], keys: tuple[str, ...], *, labe
 
     counts: dict[str, int] = {}
     for key in keys:
+        if key == "arrival_time_change_count" and key not in summary:
+            counts[key] = 0
+            continue
         if key not in summary:
             raise MonitorError(f"{label} summary is missing required key: {key}")
         try:
@@ -177,6 +182,7 @@ def build_discord_message(status: dict[str, Any]) -> str:
             f"削除: {route_counts['removed_count']}",
             f"系統差: {route_counts['line_only_count']}",
             f"時刻変更候補: {route_counts['time_change_candidate_count']}",
+            f"到着時刻変更: {route_counts['arrival_time_change_count']}",
             "",
             "schedule.json / bus.db は自動更新されていません。",
             "人間による確認が必要です。",

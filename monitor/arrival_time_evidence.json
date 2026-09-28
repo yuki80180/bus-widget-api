@@ -1,0 +1,4630 @@
+{
+  "source": "Hokutetsu official route search",
+  "note": "Exact official trip facts extracted from saved HTML; no inferred arrivals. weekend requires both Saturday and Sunday/holiday agreement.",
+  "sources": {
+    "kanazawa_station_to_uni_weekend": {
+      "url": "https://arj.hokutetsu.co.jp/timetable/pathway_timetable.php",
+      "retrieved_on": "2026-09-25",
+      "diaseq": "138,20260705",
+      "request": {
+        "diaseq": "138,20260705",
+        "landmark1": "0",
+        "arr_mei": "金沢駅",
+        "landmark2": "0",
+        "dep_mei": "金沢工業大学",
+        "weekday": "2",
+        "pathway": "0",
+        "hour": "07",
+        "min": "00"
+      },
+      "pages": [
+        {
+          "file": "monitor/debug/arrival_20260925_0700/02_kanazawa_station_to_uni_weekend_route_search_page_01_response.html",
+          "sha256": "ce9a089ffc41752fdd65049f1fa6a19d51bbf0d0e7cb6a9cb1c55777da79546e"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_0700/02_kanazawa_station_to_uni_weekend_route_search_page_02_response.html",
+          "sha256": "66d098d99f2d4d1c4281b83b640d0c58bdb35c2d12fee612b9d627b95fec3b3d"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_0700/02_kanazawa_station_to_uni_weekend_route_search_page_03_response.html",
+          "sha256": "abe1c0cbb843f1963e0c37449e76d49959d0551c33a64b46ff6bedfd3706f80e"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_0700/02_kanazawa_station_to_uni_weekend_route_search_page_04_response.html",
+          "sha256": "741c8fb77a84242b7d161e512430344c6463bf16c6c786a95a60e51b068f4168"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_0700/02_kanazawa_station_to_uni_weekend_route_search_page_05_response.html",
+          "sha256": "bb41a976cf591f6b819aa65318eec6a4967c2958f2ff12c646daba6b3ff57806"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_0700/02_kanazawa_station_to_uni_weekend_route_search_page_06_response.html",
+          "sha256": "9b577c00878cfcacde9656eff36ee99971d2c3bfe57b6de5e72605e88c772218"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_0700/02_kanazawa_station_to_uni_weekend_route_search_page_07_response.html",
+          "sha256": "f67e9f1a6af66aed2cc85280ea51118ccc96fc13b039eb74bc78e8cc19691136"
+        }
+      ],
+      "rows": [
+        {
+          "page_index": 1,
+          "depart_time": "07:46",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "08:20",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢工業大学"
+          ]
+        },
+        {
+          "page_index": 1,
+          "depart_time": "08:16",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "08:50",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢工業大学"
+          ]
+        },
+        {
+          "page_index": 1,
+          "depart_time": "09:11",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "09:40",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "四十万",
+            "いしかわ動物園"
+          ]
+        },
+        {
+          "page_index": 1,
+          "depart_time": "09:26",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "10:01",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "南ヶ丘病院"
+          ]
+        },
+        {
+          "page_index": 1,
+          "depart_time": "10:11",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "10:40",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "10:26",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "11:01",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "南ヶ丘病院"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "10:46",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "11:15",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "11:41",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "12:10",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "11:46",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "12:21",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "南ヶ丘病院"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "12:26",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "12:55",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "四十万",
+            "いしかわ動物園"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "12:51",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "13:30",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢工業大学"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "12:56",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "13:31",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "南ヶ丘病院"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "13:26",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "13:55",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "13:51",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "14:20",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "14:11",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "14:40",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "四十万",
+            "緑が丘十丁目"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "14:21",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "14:56",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "南ヶ丘病院"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "14:26",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "14:55",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "14:46",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "15:15",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "山島台四丁目"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "15:11",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "15:40",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "15:21",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "15:56",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "南ヶ丘病院"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "15:41",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "16:10",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "四十万",
+            "緑が丘十丁目"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "15:56",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "16:25",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "16:11",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "16:40",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "16:26",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "17:01",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "南ヶ丘病院"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "16:46",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "17:15",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 6,
+          "depart_time": "17:26",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "18:01",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "南ヶ丘病院"
+          ]
+        },
+        {
+          "page_index": 6,
+          "depart_time": "17:41",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "18:10",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 6,
+          "depart_time": "18:36",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "19:05",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 6,
+          "depart_time": "18:46",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "19:16",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "南ヶ丘病院"
+          ]
+        },
+        {
+          "page_index": 6,
+          "depart_time": "19:06",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "19:32",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "四十万",
+            "緑が丘十丁目"
+          ]
+        },
+        {
+          "page_index": 7,
+          "depart_time": "19:36",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "20:02",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 7,
+          "depart_time": "19:56",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "20:23",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "南ヶ丘病院"
+          ]
+        },
+        {
+          "page_index": 7,
+          "depart_time": "20:11",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "20:36",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 7,
+          "depart_time": "20:41",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "21:06",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 7,
+          "depart_time": "21:26",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "21:51",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        }
+      ]
+    },
+    "kanazawa_station_to_uni_weekday": {
+      "url": "https://arj.hokutetsu.co.jp/timetable/pathway_timetable.php",
+      "retrieved_on": "2026-09-25",
+      "diaseq": "138,20260705",
+      "request": {
+        "diaseq": "138,20260705",
+        "landmark1": "0",
+        "arr_mei": "金沢駅",
+        "landmark2": "0",
+        "dep_mei": "金沢工業大学",
+        "weekday": "0",
+        "pathway": "0",
+        "hour": "07",
+        "min": "00"
+      },
+      "pages": [
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/02_kanazawa_station_to_uni_weekday_route_search_page_01_response.html",
+          "sha256": "56642a18243f80a9da4d92a3882eb95eb0e4cb10652bac8bc50fadf5f1439220"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/02_kanazawa_station_to_uni_weekday_route_search_page_02_response.html",
+          "sha256": "70a958f8b8b46f32788ae4a96ca492270f3d307675a2c71b45fcb97199565730"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/02_kanazawa_station_to_uni_weekday_route_search_page_03_response.html",
+          "sha256": "75b4de6da2a4ba56dd0dfbf18acf89c4f822675d762a9d05658050459723566a"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/02_kanazawa_station_to_uni_weekday_route_search_page_04_response.html",
+          "sha256": "01565834d3d30146dcdbc0d6a16b2b999e6e86dcfc831e7ad5432a52ece386bc"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/02_kanazawa_station_to_uni_weekday_route_search_page_05_response.html",
+          "sha256": "72be28a4fb9748fb75ee1c407bbc84dce8813cb8a5e822aa952a5f033b67ee6e"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/02_kanazawa_station_to_uni_weekday_route_search_page_06_response.html",
+          "sha256": "2b421f18e92e340f492f63bead2c4d85d77d499bc0c3cd105f8969a97adc4647"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/02_kanazawa_station_to_uni_weekday_route_search_page_07_response.html",
+          "sha256": "dbd0bbd18343d906b58524f4ef8158cb3e4a383a72fe980bd6775315aa6d4858"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/02_kanazawa_station_to_uni_weekday_route_search_page_08_response.html",
+          "sha256": "43d9260276eeb219205ea13a4311e11ebb47d8b538ea2b372894db18e0b8f0ea"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/02_kanazawa_station_to_uni_weekday_route_search_page_09_response.html",
+          "sha256": "7df78b1c93ffdd9e3c4603bd3126a29dc57eda852029819512ba52a2a2c8575c"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/02_kanazawa_station_to_uni_weekday_route_search_page_10_response.html",
+          "sha256": "f77fe0d06cdfe0161285fe4167eba4e2e74e9b279c41bafe5cef88d2e1ba03a8"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/02_kanazawa_station_to_uni_weekday_route_search_page_11_response.html",
+          "sha256": "1c2472902c24da99cce17c90aee84e4aa366bdde46ae545c6948880f1ddb25af"
+        }
+      ],
+      "rows": [
+        {
+          "page_index": 1,
+          "depart_time": "07:21",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "07:56",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "南ヶ丘病院"
+          ]
+        },
+        {
+          "page_index": 1,
+          "depart_time": "07:26",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "08:05",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢工業大学"
+          ]
+        },
+        {
+          "page_index": 1,
+          "depart_time": "07:36",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "08:13",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "南ヶ丘病院"
+          ]
+        },
+        {
+          "page_index": 1,
+          "depart_time": "07:56",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "08:31",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢工業大学"
+          ]
+        },
+        {
+          "page_index": 1,
+          "depart_time": "08:11",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "08:48",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "南ヶ丘病院"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "08:31",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "09:00",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "08:41",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "09:25",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "34",
+          "via": [
+            "久安五丁目",
+            "金沢工業大学"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "08:46",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "09:15",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "四十万",
+            "いしかわ動物園"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "08:51",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "09:35",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "34",
+          "via": [
+            "久安五丁目",
+            "金沢工業大学"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "08:56",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "09:28",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南ヶ丘病院"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "09:31",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "10:00",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "09:46",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "10:15",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "10:21",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "10:50",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "10:31",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "11:10",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢工業大学"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "10:51",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "11:20",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "山島台四丁目"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "10:56",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "11:35",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢工業大学"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "11:11",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "11:40",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "11:51",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "12:20",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "11:56",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "12:31",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "南ヶ丘病院"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "12:11",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "12:40",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "四十万",
+            "緑が丘十丁目"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "12:26",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "12:55",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "12:46",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "13:18",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南ヶ丘病院"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "13:11",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "13:40",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "13:26",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "13:58",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南ヶ丘病院"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "13:46",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "14:15",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 6,
+          "depart_time": "14:11",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "14:40",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "四十万",
+            "緑が丘十丁目"
+          ]
+        },
+        {
+          "page_index": 6,
+          "depart_time": "14:41",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "15:10",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 6,
+          "depart_time": "14:56",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "15:31",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "南ヶ丘病院"
+          ]
+        },
+        {
+          "page_index": 6,
+          "depart_time": "15:11",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "15:40",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 6,
+          "depart_time": "15:41",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "16:10",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 7,
+          "depart_time": "15:56",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "16:34",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "南ヶ丘病院"
+          ]
+        },
+        {
+          "page_index": 7,
+          "depart_time": "16:11",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "16:40",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "四十万",
+            "緑が丘十丁目"
+          ]
+        },
+        {
+          "page_index": 7,
+          "depart_time": "16:21",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "17:06",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "34",
+          "via": [
+            "久安五丁目",
+            "金沢工業大学"
+          ]
+        },
+        {
+          "page_index": 7,
+          "depart_time": "16:41",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "17:12",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 7,
+          "depart_time": "16:53",
+          "depart_stop": "金沢駅［東口１１］",
+          "depart_pole": "L",
+          "arrive_time": "17:31",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "49",
+          "via": [
+            "相木町",
+            "千代野ニュータウン"
+          ]
+        },
+        {
+          "page_index": 8,
+          "depart_time": "16:56",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "17:27",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 8,
+          "depart_time": "17:11",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "17:43",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "四十万",
+            "緑が丘十丁目"
+          ]
+        },
+        {
+          "page_index": 8,
+          "depart_time": "17:31",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "18:04",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "川北温泉"
+          ]
+        },
+        {
+          "page_index": 8,
+          "depart_time": "17:41",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "18:28",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "34",
+          "via": [
+            "久安五丁目",
+            "金沢工業大学"
+          ]
+        },
+        {
+          "page_index": 8,
+          "depart_time": "17:46",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "18:28",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "南ヶ丘病院"
+          ]
+        },
+        {
+          "page_index": 9,
+          "depart_time": "17:51",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "18:31",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢工業大学"
+          ]
+        },
+        {
+          "page_index": 9,
+          "depart_time": "18:06",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "18:39",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 9,
+          "depart_time": "18:16",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "18:49",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 9,
+          "depart_time": "18:26",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "18:59",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 9,
+          "depart_time": "18:41",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "19:21",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢工業大学"
+          ]
+        },
+        {
+          "page_index": 10,
+          "depart_time": "18:56",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "19:24",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "川北温泉"
+          ]
+        },
+        {
+          "page_index": 10,
+          "depart_time": "19:16",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "19:43",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "四十万",
+            "緑が丘十丁目"
+          ]
+        },
+        {
+          "page_index": 10,
+          "depart_time": "19:26",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "19:56",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "南ヶ丘病院"
+          ]
+        },
+        {
+          "page_index": 10,
+          "depart_time": "19:46",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "20:13",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 10,
+          "depart_time": "19:56",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "20:26",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "南ヶ丘病院"
+          ]
+        },
+        {
+          "page_index": 11,
+          "depart_time": "20:21",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "20:47",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "山島台四丁目"
+          ]
+        },
+        {
+          "page_index": 11,
+          "depart_time": "20:41",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "21:11",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "南ヶ丘病院"
+          ]
+        },
+        {
+          "page_index": 11,
+          "depart_time": "21:31",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "21:56",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 11,
+          "depart_time": "22:11",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "22:36",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        }
+      ]
+    },
+    "uni_to_kanazawa_station_weekday": {
+      "url": "https://arj.hokutetsu.co.jp/timetable/pathway_timetable.php",
+      "retrieved_on": "2026-09-25",
+      "diaseq": "138,20260705",
+      "request": {
+        "diaseq": "138,20260705",
+        "landmark1": "0",
+        "arr_mei": "金沢工業大学",
+        "landmark2": "0",
+        "dep_mei": "金沢駅",
+        "weekday": "0",
+        "pathway": "0",
+        "hour": "07",
+        "min": "00"
+      },
+      "pages": [
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/03_uni_to_kanazawa_station_weekday_route_search_page_01_response.html",
+          "sha256": "ad2650b215947c41e953638ad256540d1d7222a3c1923ed2cbfec339c2ad3682"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/03_uni_to_kanazawa_station_weekday_route_search_page_02_response.html",
+          "sha256": "2a7f75aab5d54ab9a15ea394fd381a2278fb5a10b217a54df2e2620c1fd89aac"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/03_uni_to_kanazawa_station_weekday_route_search_page_03_response.html",
+          "sha256": "3f72eed5c3ce9a87c184a8a95487e32dc052ca794ee81acb0af5b0e2265e6659"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/03_uni_to_kanazawa_station_weekday_route_search_page_04_response.html",
+          "sha256": "49d7a4f332f970eba168c2e51335052992b170f246d5e52d54fb626c92b2e9d7"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/03_uni_to_kanazawa_station_weekday_route_search_page_05_response.html",
+          "sha256": "17b60ca67cbc59762af1ccf9f821a991cde5f18e96a12a192a29d86a19ceb834"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/03_uni_to_kanazawa_station_weekday_route_search_page_06_response.html",
+          "sha256": "7d8cbcad56ec6fbe821bd380ca5a6354f6b48d8b23eceb3e16d43575b5781f86"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/03_uni_to_kanazawa_station_weekday_route_search_page_07_response.html",
+          "sha256": "9d8f319011fe17c8bf1f4e213bd3c1c7f460933ac11f4a3f58c3db3805e599f7"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/03_uni_to_kanazawa_station_weekday_route_search_page_08_response.html",
+          "sha256": "cf88f3b022adc89fd908d387a88f084a316acced852449a4e60d8c0e22541aad"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/03_uni_to_kanazawa_station_weekday_route_search_page_09_response.html",
+          "sha256": "707748e534f9f5db10ac4ebb76cadc2ba23612ccf6a3b8cc332687e34299f64e"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/03_uni_to_kanazawa_station_weekday_route_search_page_10_response.html",
+          "sha256": "6ce4e82851251ec0f75dc3187cecdb2d16152410614fc400712ad7928e13c68f"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/03_uni_to_kanazawa_station_weekday_route_search_page_11_response.html",
+          "sha256": "d0b5dfd852f2aaf1f5c810a9bec0dfd4eb76919b5f9949d284c36517d2abfa3f"
+        }
+      ],
+      "rows": [
+        {
+          "page_index": 1,
+          "depart_time": "06:35",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "07:04",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 1,
+          "depart_time": "06:45",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "07:15",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 1,
+          "depart_time": "06:57",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "07:35",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "07:00",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "07:35",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "07:06",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "07:40",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "07:12",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "07:58",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "07:23",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "07:57",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "34",
+          "via": [
+            "久安三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "07:25",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "08:15",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "49",
+          "via": [
+            "泉野三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "07:35",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "08:14",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "07:42",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "08:17",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "07:53",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "08:26",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "07:59",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "08:31",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "08:13",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "08:54",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "08:29",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "09:03",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "34",
+          "via": [
+            "久安三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "09:03",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "09:41",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "09:04",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "09:40",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "09:25",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "09:59",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "34",
+          "via": [
+            "久安三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "10:00",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "10:34",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "34",
+          "via": [
+            "久安三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "10:13",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "10:51",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "10:16",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "10:52",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "10:47",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "11:20",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "11:14",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "11:50",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "11:35",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "12:11",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 6,
+          "depart_time": "12:06",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "12:41",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 6,
+          "depart_time": "12:06",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "12:42",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 6,
+          "depart_time": "12:38",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "13:08",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 6,
+          "depart_time": "12:56",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "13:32",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 6,
+          "depart_time": "13:15",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "13:49",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 7,
+          "depart_time": "13:31",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "14:07",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 7,
+          "depart_time": "13:51",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "14:27",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 7,
+          "depart_time": "14:05",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "14:43",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 7,
+          "depart_time": "14:11",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "14:44",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 7,
+          "depart_time": "14:30",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "15:06",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 8,
+          "depart_time": "14:46",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "15:22",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 8,
+          "depart_time": "14:53",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "15:28",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 8,
+          "depart_time": "14:56",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "15:32",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 8,
+          "depart_time": "15:06",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "15:42",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 8,
+          "depart_time": "15:21",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "15:57",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 9,
+          "depart_time": "15:31",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "16:09",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 9,
+          "depart_time": "16:00",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "16:38",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 9,
+          "depart_time": "16:10",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "16:46",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 9,
+          "depart_time": "16:11",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "16:53",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 9,
+          "depart_time": "16:21",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "16:56",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 10,
+          "depart_time": "16:30",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "17:08",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 10,
+          "depart_time": "17:11",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "17:54",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 10,
+          "depart_time": "17:32",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "18:11",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 10,
+          "depart_time": "18:34",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "19:08",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 10,
+          "depart_time": "18:55",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "19:30",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 11,
+          "depart_time": "19:08",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "19:44",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 11,
+          "depart_time": "19:31",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "20:03",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 11,
+          "depart_time": "21:36",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "22:06",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        }
+      ]
+    },
+    "uni_to_nakahashi_weekday": {
+      "url": "https://arj.hokutetsu.co.jp/timetable/pathway_timetable.php",
+      "retrieved_on": "2026-09-25",
+      "diaseq": "138,20260705",
+      "request": {
+        "diaseq": "138,20260705",
+        "landmark1": "0",
+        "arr_mei": "金沢工業大学",
+        "landmark2": "0",
+        "dep_mei": "中橋",
+        "weekday": "0",
+        "pathway": "0",
+        "hour": "07",
+        "min": "00"
+      },
+      "pages": [
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/04_uni_to_nakahashi_weekday_route_search_page_01_response.html",
+          "sha256": "9bc1103afe6cc31863c7f3f365daa6bfdbd6317ca0087f3246b67b8990cd39ab"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/04_uni_to_nakahashi_weekday_route_search_page_02_response.html",
+          "sha256": "b4eaa5323704b9cc51b099b228655747fc12b75b975fd22671504e644fe8319e"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/04_uni_to_nakahashi_weekday_route_search_page_03_response.html",
+          "sha256": "6462ba98e6a7138184cf404f04699f07f85e243ed47cfee5d27bf9f2fc181070"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/04_uni_to_nakahashi_weekday_route_search_page_04_response.html",
+          "sha256": "c875068f2807d42a8eee4bfc5ff3433c444c7f270adc6cfe646fada99928f231"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/04_uni_to_nakahashi_weekday_route_search_page_05_response.html",
+          "sha256": "30f5d7f0f2842c44e4d0bc22eaa846605691be38ecae1473d60d028c80e429b7"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/04_uni_to_nakahashi_weekday_route_search_page_06_response.html",
+          "sha256": "31e09e938a0f450a20530edfe04cc94ba3f997f4459c9fc9b5ed93e0a84cc43e"
+        }
+      ],
+      "rows": [
+        {
+          "page_index": 1,
+          "depart_time": "06:52",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "07:20",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "60",
+          "via": [
+            "寺地",
+            "金石"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "07:19",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "07:46",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "63",
+          "via": [
+            "久安三丁目",
+            "大野港"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "07:28",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "07:58",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "60",
+          "via": [
+            "寺地",
+            "金石"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "08:09",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "08:38",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "60",
+          "via": [
+            "寺地",
+            "金石"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "08:30",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "08:56",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "63",
+          "via": [
+            "久安三丁目",
+            "大野港"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "08:35",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "09:02",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "60",
+          "via": [
+            "寺地",
+            "金石"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "08:52",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "09:19",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "60",
+          "via": [
+            "寺地",
+            "金石"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "09:31",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "09:58",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "60",
+          "via": [
+            "寺地",
+            "金石"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "10:35",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "11:01",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "61",
+          "via": [
+            "久安三丁目",
+            "大野"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "11:35",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "12:01",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "60",
+          "via": [
+            "久安三丁目",
+            "金石"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "12:35",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "13:01",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "61",
+          "via": [
+            "久安三丁目",
+            "大野"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "13:35",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "14:01",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "61",
+          "via": [
+            "久安三丁目",
+            "大野"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "14:35",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "15:01",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "60",
+          "via": [
+            "久安三丁目",
+            "金石"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "15:50",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "16:17",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "60",
+          "via": [
+            "久安三丁目",
+            "金石"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "16:00",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "16:27",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "63",
+          "via": [
+            "久安三丁目",
+            "大野港"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "16:40",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "17:07",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "61",
+          "via": [
+            "久安三丁目",
+            "大野"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "16:56",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "17:24",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "60",
+          "via": [
+            "寺地",
+            "金石"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "17:35",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "18:02",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "60",
+          "via": [
+            "久安三丁目",
+            "金石"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "18:50",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "19:15",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "63",
+          "via": [
+            "久安三丁目",
+            "大野港"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "19:25",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "19:50",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "61",
+          "via": [
+            "久安三丁目",
+            "大野"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "19:50",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "20:15",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "63",
+          "via": [
+            "久安三丁目",
+            "大野港"
+          ]
+        },
+        {
+          "page_index": 6,
+          "depart_time": "20:20",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "20:45",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "61",
+          "via": [
+            "久安三丁目",
+            "大野"
+          ]
+        },
+        {
+          "page_index": 6,
+          "depart_time": "20:45",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "21:10",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "60",
+          "via": [
+            "久安三丁目",
+            "金石"
+          ]
+        },
+        {
+          "page_index": 6,
+          "depart_time": "21:06",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "21:32",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "60",
+          "via": [
+            "寺地",
+            "金石"
+          ]
+        }
+      ]
+    },
+    "kanazawa_station_to_uni_saturday": {
+      "url": "https://arj.hokutetsu.co.jp/timetable/pathway_timetable.php",
+      "retrieved_on": "2026-09-25",
+      "diaseq": "138,20260705",
+      "request": {
+        "diaseq": "138,20260705",
+        "landmark1": "0",
+        "arr_mei": "金沢駅",
+        "landmark2": "0",
+        "dep_mei": "金沢工業大学",
+        "weekday": "1",
+        "pathway": "0",
+        "hour": "07",
+        "min": "00"
+      },
+      "pages": [
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/05_kanazawa_station_to_uni_saturday_route_search_page_01_response.html",
+          "sha256": "95e826b01ef8deaf919a3c22dd9fd63418c53172c7b175d6593f7ca9b51bb3c6"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/05_kanazawa_station_to_uni_saturday_route_search_page_02_response.html",
+          "sha256": "f2b36860eb5a7ae8b1e54c8bd47c9f9ba0c0f57c1edef3598418a96af2559948"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/05_kanazawa_station_to_uni_saturday_route_search_page_03_response.html",
+          "sha256": "9e935549ebf6c52b7e2179d5848de34e52e8239e29fdce18e8b91b40ba82c34d"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/05_kanazawa_station_to_uni_saturday_route_search_page_04_response.html",
+          "sha256": "df49ce90a2f7d1b128f2945d52d9e28351185ea42e9ec882e837edd17e9ce790"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/05_kanazawa_station_to_uni_saturday_route_search_page_05_response.html",
+          "sha256": "6d442799d787d79de36c3c08b125f6f0844d2fd6ca7ad056522a105b24a27820"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/05_kanazawa_station_to_uni_saturday_route_search_page_06_response.html",
+          "sha256": "897f61c886f3efa337c2a5916fcf25530e3a3d8bd0d6d305596ed4a20f7f7e08"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/05_kanazawa_station_to_uni_saturday_route_search_page_07_response.html",
+          "sha256": "c3dd3a81ba628fcb056044314e1db08a33c3203fed83f280bfcd2ab02638bef4"
+        }
+      ],
+      "rows": [
+        {
+          "page_index": 1,
+          "depart_time": "07:46",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "08:20",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢工業大学"
+          ]
+        },
+        {
+          "page_index": 1,
+          "depart_time": "08:16",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "08:50",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢工業大学"
+          ]
+        },
+        {
+          "page_index": 1,
+          "depart_time": "09:11",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "09:40",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "四十万",
+            "いしかわ動物園"
+          ]
+        },
+        {
+          "page_index": 1,
+          "depart_time": "09:26",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "10:01",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "南ヶ丘病院"
+          ]
+        },
+        {
+          "page_index": 1,
+          "depart_time": "10:11",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "10:40",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "10:26",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "11:01",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "南ヶ丘病院"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "10:46",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "11:15",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "11:41",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "12:10",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "11:46",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "12:21",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "南ヶ丘病院"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "12:26",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "12:55",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "四十万",
+            "いしかわ動物園"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "12:51",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "13:30",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢工業大学"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "12:56",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "13:31",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "南ヶ丘病院"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "13:26",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "13:55",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "13:51",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "14:20",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "14:11",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "14:40",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "四十万",
+            "緑が丘十丁目"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "14:21",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "14:56",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "南ヶ丘病院"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "14:26",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "14:55",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "14:46",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "15:15",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "山島台四丁目"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "15:11",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "15:40",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "15:21",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "15:56",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "南ヶ丘病院"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "15:41",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "16:10",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "四十万",
+            "緑が丘十丁目"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "15:56",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "16:25",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "16:11",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "16:40",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "16:26",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "17:01",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "南ヶ丘病院"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "16:46",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "17:15",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 6,
+          "depart_time": "17:26",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "18:01",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "南ヶ丘病院"
+          ]
+        },
+        {
+          "page_index": 6,
+          "depart_time": "17:41",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "18:10",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 6,
+          "depart_time": "18:36",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "19:05",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 6,
+          "depart_time": "18:46",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "19:16",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "南ヶ丘病院"
+          ]
+        },
+        {
+          "page_index": 6,
+          "depart_time": "19:06",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "19:32",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "四十万",
+            "緑が丘十丁目"
+          ]
+        },
+        {
+          "page_index": 7,
+          "depart_time": "19:36",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "20:02",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 7,
+          "depart_time": "19:56",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "20:23",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "A",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "南ヶ丘病院"
+          ]
+        },
+        {
+          "page_index": 7,
+          "depart_time": "20:11",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "20:36",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 7,
+          "depart_time": "20:41",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "21:06",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        },
+        {
+          "page_index": 7,
+          "depart_time": "21:26",
+          "depart_stop": "金沢駅［東口１０］",
+          "depart_pole": "I",
+          "arrive_time": "21:51",
+          "arrive_stop": "金沢工業大学",
+          "arrive_pole": "C",
+          "line": "33",
+          "via": [
+            "寺地",
+            "南部車庫"
+          ]
+        }
+      ]
+    },
+    "uni_to_kanazawa_station_saturday": {
+      "url": "https://arj.hokutetsu.co.jp/timetable/pathway_timetable.php",
+      "retrieved_on": "2026-09-25",
+      "diaseq": "138,20260705",
+      "request": {
+        "diaseq": "138,20260705",
+        "landmark1": "0",
+        "arr_mei": "金沢工業大学",
+        "landmark2": "0",
+        "dep_mei": "金沢駅",
+        "weekday": "1",
+        "pathway": "0",
+        "hour": "07",
+        "min": "00"
+      },
+      "pages": [
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/06_uni_to_kanazawa_station_saturday_route_search_page_01_response.html",
+          "sha256": "432df8ff69e50b0cb6f8166707dde826e71357f47b0c8d95983c3417e7eac635"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/06_uni_to_kanazawa_station_saturday_route_search_page_02_response.html",
+          "sha256": "cc8df5d17c65d501c3737beee44659ce76e7a8b54813dc42e4c414598b1db9d2"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/06_uni_to_kanazawa_station_saturday_route_search_page_03_response.html",
+          "sha256": "ea3d274913ce6b8dea748d1afca502dae137f6cb45fc842fc87b92519ad902bb"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/06_uni_to_kanazawa_station_saturday_route_search_page_04_response.html",
+          "sha256": "21d2d4a25ed4818150f9f9dea0cf29c3b7bbcfe294cb06b77bab420b2d754a6f"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/06_uni_to_kanazawa_station_saturday_route_search_page_05_response.html",
+          "sha256": "00f26e4a3cbc31739f2fc04519e4a104e8bb381938b61ffb8822924b7ce4ed8f"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/06_uni_to_kanazawa_station_saturday_route_search_page_06_response.html",
+          "sha256": "ea6204412d23a98ec2c6e83a44f02d3d21a79801d677ef9ba5b44788db508b9a"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/06_uni_to_kanazawa_station_saturday_route_search_page_07_response.html",
+          "sha256": "0e923e291848095d9aaa3835c7eaddc67e4e8fa8546d323a580da50c65f994d7"
+        }
+      ],
+      "rows": [
+        {
+          "page_index": 1,
+          "depart_time": "07:14",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "07:44",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 1,
+          "depart_time": "07:46",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "08:17",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 1,
+          "depart_time": "08:17",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "08:47",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 1,
+          "depart_time": "08:34",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "09:04",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 1,
+          "depart_time": "09:05",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "09:39",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "34",
+          "via": [
+            "久安三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "09:07",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "09:37",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "09:11",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "09:43",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "10:17",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "10:55",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "11:01",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "11:36",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "11:26",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "11:58",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "11:37",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "12:13",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "12:01",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "12:36",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "12:15",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "12:50",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "12:38",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "13:16",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "12:51",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "13:27",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "13:17",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "13:51",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "13:48",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "14:26",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "13:59",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "14:35",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "14:31",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "15:03",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "14:58",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "15:36",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "15:13",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "15:49",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "16:11",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "16:49",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "16:13",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "16:45",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "17:09",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "17:46",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "17:21",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "18:00",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 6,
+          "depart_time": "17:51",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "18:23",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 6,
+          "depart_time": "18:38",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "19:12",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 6,
+          "depart_time": "18:41",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "19:15",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 6,
+          "depart_time": "19:36",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "20:09",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 6,
+          "depart_time": "19:56",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "20:28",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 7,
+          "depart_time": "20:25",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "20:58",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 7,
+          "depart_time": "20:50",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "21:20",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        }
+      ]
+    },
+    "uni_to_nakahashi_saturday": {
+      "url": "https://arj.hokutetsu.co.jp/timetable/pathway_timetable.php",
+      "retrieved_on": "2026-09-25",
+      "diaseq": "138,20260705",
+      "request": {
+        "diaseq": "138,20260705",
+        "landmark1": "0",
+        "arr_mei": "金沢工業大学",
+        "landmark2": "0",
+        "dep_mei": "中橋",
+        "weekday": "1",
+        "pathway": "0",
+        "hour": "07",
+        "min": "00"
+      },
+      "pages": [
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/07_uni_to_nakahashi_saturday_route_search_page_01_response.html",
+          "sha256": "2c70bda893921c19032f01b705293b56e8958d1381a814b0b3ac562496f10a79"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/07_uni_to_nakahashi_saturday_route_search_page_02_response.html",
+          "sha256": "c040972922aa997f87f62e0bd1469dc36549190b96f1c5f9708f05bef755df0f"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/07_uni_to_nakahashi_saturday_route_search_page_03_response.html",
+          "sha256": "3e8c57644eab6398a16f5fac4fdb535227c9ab1232247137d8b83dadc329fe2e"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/07_uni_to_nakahashi_saturday_route_search_page_04_response.html",
+          "sha256": "be54d69e3d017c5a38bc9c347d6378d160c42250e278ecf316e16237f09a9c42"
+        }
+      ],
+      "rows": [
+        {
+          "page_index": 1,
+          "depart_time": "07:04",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "07:29",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "63",
+          "via": [
+            "久安三丁目",
+            "大野港"
+          ]
+        },
+        {
+          "page_index": 1,
+          "depart_time": "07:32",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "07:58",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "60",
+          "via": [
+            "久安三丁目",
+            "金石"
+          ]
+        },
+        {
+          "page_index": 1,
+          "depart_time": "07:54",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "08:20",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "60",
+          "via": [
+            "寺地",
+            "金石"
+          ]
+        },
+        {
+          "page_index": 1,
+          "depart_time": "08:14",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "08:40",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "60",
+          "via": [
+            "寺地",
+            "金石"
+          ]
+        },
+        {
+          "page_index": 1,
+          "depart_time": "08:20",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "08:46",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "61",
+          "via": [
+            "久安三丁目",
+            "大野"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "08:46",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "09:12",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "60",
+          "via": [
+            "寺地",
+            "金石"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "09:25",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "09:51",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "61",
+          "via": [
+            "久安三丁目",
+            "大野"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "09:46",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "10:12",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "60",
+          "via": [
+            "寺地",
+            "金石"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "10:15",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "10:41",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "60",
+          "via": [
+            "寺地",
+            "金石"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "10:35",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "11:01",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "61",
+          "via": [
+            "久安三丁目",
+            "大野"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "11:35",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "12:01",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "61",
+          "via": [
+            "久安三丁目",
+            "大野"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "12:35",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "13:01",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "61",
+          "via": [
+            "久安三丁目",
+            "大野"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "13:35",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "14:01",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "60",
+          "via": [
+            "久安三丁目",
+            "金石"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "14:35",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "15:01",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "60",
+          "via": [
+            "久安三丁目",
+            "金石"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "15:35",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "16:01",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "63",
+          "via": [
+            "久安三丁目",
+            "大野港"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "16:35",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "17:01",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "61",
+          "via": [
+            "久安三丁目",
+            "大野"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "17:35",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "18:01",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "63",
+          "via": [
+            "久安三丁目",
+            "大野港"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "18:30",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "18:56",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "61",
+          "via": [
+            "久安三丁目",
+            "大野"
+          ]
+        }
+      ]
+    },
+    "uni_to_kanazawa_station_weekend": {
+      "url": "https://arj.hokutetsu.co.jp/timetable/pathway_timetable.php",
+      "retrieved_on": "2026-09-25",
+      "diaseq": "138,20260705",
+      "request": {
+        "diaseq": "138,20260705",
+        "landmark1": "0",
+        "arr_mei": "金沢工業大学",
+        "landmark2": "0",
+        "dep_mei": "金沢駅",
+        "weekday": "2",
+        "pathway": "0",
+        "hour": "07",
+        "min": "00"
+      },
+      "pages": [
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/08_uni_to_kanazawa_station_weekend_route_search_page_01_response.html",
+          "sha256": "b5338518f40f8cbc5d8616d01c65eea8044e8c76234e1db1ffc1b4e655445251"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/08_uni_to_kanazawa_station_weekend_route_search_page_02_response.html",
+          "sha256": "2ad9cb91e19c087024315a1854f9b2c398cefe398787b426c4a779d8bf2d01a0"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/08_uni_to_kanazawa_station_weekend_route_search_page_03_response.html",
+          "sha256": "1e0d7e6c0f085d6900ffeb16cf77e0bf41c025f049100a6935417432eee410f0"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/08_uni_to_kanazawa_station_weekend_route_search_page_04_response.html",
+          "sha256": "bb683a9b87d5b6d81dd495070e2de4dafd431bb1ba341b7e6355c49b0077fd22"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/08_uni_to_kanazawa_station_weekend_route_search_page_05_response.html",
+          "sha256": "0521f68082009c7265e3b08b4b0d7713886a84a6c8a0ab24969af4c1c320300d"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/08_uni_to_kanazawa_station_weekend_route_search_page_06_response.html",
+          "sha256": "fbe17505a6d991dd1213fcf5eef4a31cf1b1d8c49bb71b17e58ef57d5a8e4866"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/08_uni_to_kanazawa_station_weekend_route_search_page_07_response.html",
+          "sha256": "6e24354354958e742abb31b106dc42c7f51201ff4d0ac5bcf06d3ccecc09432a"
+        }
+      ],
+      "rows": [
+        {
+          "page_index": 1,
+          "depart_time": "07:14",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "07:44",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 1,
+          "depart_time": "07:46",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "08:17",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 1,
+          "depart_time": "08:17",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "08:47",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 1,
+          "depart_time": "08:34",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "09:04",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 1,
+          "depart_time": "09:05",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "09:39",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "34",
+          "via": [
+            "久安三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "09:07",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "09:37",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "09:11",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "09:43",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "10:17",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "10:55",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "11:01",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "11:36",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "11:26",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "11:58",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "11:37",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "12:13",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "12:01",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "12:36",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "12:15",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "12:50",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "12:38",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "13:16",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "12:51",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "13:27",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "13:17",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "13:51",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "13:48",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "14:26",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "13:59",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "14:35",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "14:31",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "15:03",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "14:58",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "15:36",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "15:13",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "15:49",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "16:11",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "16:49",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "16:13",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "16:45",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "17:09",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "17:46",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 5,
+          "depart_time": "17:21",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "18:00",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 6,
+          "depart_time": "17:51",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "18:23",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 6,
+          "depart_time": "18:38",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "19:12",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 6,
+          "depart_time": "18:41",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "19:15",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 6,
+          "depart_time": "19:36",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "20:09",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 6,
+          "depart_time": "19:56",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "20:28",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "39",
+          "via": [
+            "泉野三丁目",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 7,
+          "depart_time": "20:25",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "20:58",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        },
+        {
+          "page_index": 7,
+          "depart_time": "20:50",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "21:20",
+          "arrive_stop": "金沢駅［東口降車場］",
+          "arrive_pole": "T",
+          "line": "33",
+          "via": [
+            "寺地",
+            "金沢駅"
+          ]
+        }
+      ]
+    },
+    "uni_to_nakahashi_weekend": {
+      "url": "https://arj.hokutetsu.co.jp/timetable/pathway_timetable.php",
+      "retrieved_on": "2026-09-25",
+      "diaseq": "138,20260705",
+      "request": {
+        "diaseq": "138,20260705",
+        "landmark1": "0",
+        "arr_mei": "金沢工業大学",
+        "landmark2": "0",
+        "dep_mei": "中橋",
+        "weekday": "2",
+        "pathway": "0",
+        "hour": "07",
+        "min": "00"
+      },
+      "pages": [
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/09_uni_to_nakahashi_weekend_route_search_page_01_response.html",
+          "sha256": "07a5d78a968843cdf73e1a4f484c4a470906ab667a9356f28889ed497f1fca3c"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/09_uni_to_nakahashi_weekend_route_search_page_02_response.html",
+          "sha256": "45abbf4d91651a05f8ed36ce712071e10c1f5de5bc08577014b9aa3d6e1a8004"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/09_uni_to_nakahashi_weekend_route_search_page_03_response.html",
+          "sha256": "211bab898028a024a0462ec08cc785c2ac83fce13b5582a93b7dd45b8352e51d"
+        },
+        {
+          "file": "monitor/debug/arrival_20260925_remaining/09_uni_to_nakahashi_weekend_route_search_page_04_response.html",
+          "sha256": "f205a76392f14dd2090c4729a151470301fc669a0639246d4f6129e7c738e025"
+        }
+      ],
+      "rows": [
+        {
+          "page_index": 1,
+          "depart_time": "07:04",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "07:29",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "63",
+          "via": [
+            "久安三丁目",
+            "大野港"
+          ]
+        },
+        {
+          "page_index": 1,
+          "depart_time": "07:32",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "07:58",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "60",
+          "via": [
+            "久安三丁目",
+            "金石"
+          ]
+        },
+        {
+          "page_index": 1,
+          "depart_time": "07:54",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "08:20",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "60",
+          "via": [
+            "寺地",
+            "金石"
+          ]
+        },
+        {
+          "page_index": 1,
+          "depart_time": "08:14",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "08:40",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "60",
+          "via": [
+            "寺地",
+            "金石"
+          ]
+        },
+        {
+          "page_index": 1,
+          "depart_time": "08:20",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "08:46",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "61",
+          "via": [
+            "久安三丁目",
+            "大野"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "08:46",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "09:12",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "60",
+          "via": [
+            "寺地",
+            "金石"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "09:25",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "09:51",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "61",
+          "via": [
+            "久安三丁目",
+            "大野"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "09:46",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "10:12",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "60",
+          "via": [
+            "寺地",
+            "金石"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "10:15",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "D",
+          "arrive_time": "10:41",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "60",
+          "via": [
+            "寺地",
+            "金石"
+          ]
+        },
+        {
+          "page_index": 2,
+          "depart_time": "10:35",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "11:01",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "61",
+          "via": [
+            "久安三丁目",
+            "大野"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "11:35",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "12:01",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "61",
+          "via": [
+            "久安三丁目",
+            "大野"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "12:35",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "13:01",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "61",
+          "via": [
+            "久安三丁目",
+            "大野"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "13:35",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "14:01",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "60",
+          "via": [
+            "久安三丁目",
+            "金石"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "14:35",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "15:01",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "60",
+          "via": [
+            "久安三丁目",
+            "金石"
+          ]
+        },
+        {
+          "page_index": 3,
+          "depart_time": "15:35",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "16:01",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "63",
+          "via": [
+            "久安三丁目",
+            "大野港"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "16:35",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "17:01",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "61",
+          "via": [
+            "久安三丁目",
+            "大野"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "17:35",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "18:01",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "63",
+          "via": [
+            "久安三丁目",
+            "大野港"
+          ]
+        },
+        {
+          "page_index": 4,
+          "depart_time": "18:30",
+          "depart_stop": "金沢工業大学",
+          "depart_pole": "B",
+          "arrive_time": "18:56",
+          "arrive_stop": "中橋",
+          "arrive_pole": "A",
+          "line": "61",
+          "via": [
+            "久安三丁目",
+            "大野"
+          ]
+        }
+      ]
+    }
+  },
+  "baseline_departures_sha256": "c8e0b498b45a1625506dd9672ecdb5586dbc85590a3742520c5fe9b0e53b4e3f",
+  "baseline_db_rows_sha256": "16e7638b44293510b4d9a0001b45afd7659dbabd1217414b7aacf9d94cc2a42a"
+}
